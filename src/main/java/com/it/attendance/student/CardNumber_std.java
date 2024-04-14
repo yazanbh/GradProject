@@ -105,7 +105,7 @@ public class CardNumber_std extends AppCompatActivity implements CardNfcAsyncTas
         mCardForm.cardRequired(true)
                 .expirationRequired(false)
                 .cvvRequired(false)
-                .mobileNumberRequired(true)
+                .mobileNumberRequired(false)
                 .setup(this);
 
         mCardForm.setOnCardFormSubmitListener(this);
@@ -137,7 +137,7 @@ public class CardNumber_std extends AppCompatActivity implements CardNfcAsyncTas
             // Prepare the data to update
             Map<String, Object> updates = new HashMap<>();
                 updates.put("card",card);
-            updates.put("phone",mCountryNumber.getText().toString()+ mPhoneNumber.getText().toString());
+
             // Update the document
             docRef.update(updates).addOnCompleteListener(new OnCompleteListener<Void>() {
                 @Override

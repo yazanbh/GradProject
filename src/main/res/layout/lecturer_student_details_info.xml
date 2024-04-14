@@ -3,18 +3,18 @@
     android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:weightSum="16"
+    android:weightSum="17"
     android:background="@drawable/circular_present"
     android:layout_margin="4dp">
 
     <LinearLayout
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_weight="10"
+        android:layout_weight="8"
         android:foreground="?attr/selectableItemBackground"
-        android:paddingLeft="12sp"
+        android:paddingLeft="6sp"
         android:paddingTop="12dp"
-        android:paddingRight="12dp"
+        android:paddingRight="6dp"
         android:orientation="vertical">
         <TextView
             android:id="@+id/student_name_detail_adapter"
@@ -38,12 +38,40 @@
 
     </LinearLayout>
 
+<LinearLayout
+    android:layout_width="0dp"
+    android:layout_height="match_parent"
+    android:layout_weight="3"
+    android:gravity="center"
+    android:visibility="invisible"
+    android:id="@+id/exABSENT"
+    >
+    <TextView
+        android:id="@+id/exabsent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="20sp"
+        android:text="0"
+        android:textColor="#000000"
+        android:textStyle="bold"
+        android:fontFamily="@font/nunito"
+        android:layout_marginRight="5dp"/>
+
+    <ImageView
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:src="@drawable/exabsent" />
+
+
+</LinearLayout>
     <LinearLayout
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="3"
         android:gravity="center"
         >
+
+
         <TextView
             android:id="@+id/present"
             android:layout_width="wrap_content"
@@ -60,7 +88,9 @@
             android:layout_height="30dp"
             android:src="@drawable/present" />
 
-    </LinearLayout><LinearLayout
+    </LinearLayout>
+
+    <LinearLayout
     android:layout_width="0dp"
     android:layout_height="match_parent"
     android:layout_weight="3"

@@ -1,11 +1,17 @@
 package com.it.attendance.lecturer;
 
 import android.annotation.SuppressLint;
+import android.app.Dialog;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Window;
 import android.widget.ImageView;
+import android.widget.RadioButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -23,18 +29,24 @@ import com.google.firebase.firestore.QuerySnapshot;
 import com.ismaeldivita.chipnavigation.ChipNavigationBar;
 import com.it.attendance.R;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 
 public class StudentDetail extends AppCompatActivity {
     FirebaseFirestore db;
     ImageView img_btn;
     TextView cname,PresentCount,AbsentCount,percent;
     SwipeRefreshLayout swipeLayout;
-    double present,absent;
+    double present,absent , exabsent;
     ChipNavigationBar bottomNavigationView;
+    Calendar mCalendar;
+    String Email , name , courseNumber;
+
 
 
     @SuppressLint("SimpleDateFormat")
@@ -100,14 +112,15 @@ public class StudentDetail extends AppCompatActivity {
 
         CalendarView calendarView = findViewById(R.id.calendarView);
         List<EventDay> events = new ArrayList<>();
-        String Email = getIntent().getStringExtra("Email");
+         Email = getIntent().getStringExtra("Email");
         Log.e("student email",Email);
-        String name = getIntent().getStringExtra("name");
-        String courseNumber = getIntent().getStringExtra("number");
+         name = getIntent().getStringExtra("name");
+         courseNumber = getIntent().getStringExtra("number");
         Log.e("course number",courseNumber);
 
         present=0;
         absent=0;
+        exabsent=0;
         //set course name in text view of top page
         cname=findViewById(R.id.CourseName);
         cname.setText(name);
@@ -120,9 +133,10 @@ public class StudentDetail extends AppCompatActivity {
         db = FirebaseFirestore.getInstance();
 
         //list to get IsPresent Boolean if equal to true or false
-        List<Boolean> presentList = new ArrayList<>();
-        presentList.add(true);
-        presentList.add(false);
+        List<String> presentList = new ArrayList<>();
+        presentList.add("present");
+        presentList.add("absent");
+        presentList.add("exabsent");
 
         //document reference for attendance
         CollectionReference collectionRef = db.collection("attendance").document(courseNumber).collection(Email);
@@ -137,24 +151,28 @@ public class StudentDetail extends AppCompatActivity {
                                 String day = document.getString("day");
                                 String month = document.getString("month");
                                 String year = document.getString("year");
-                                boolean isPresent = document.getBoolean("IsPresent");
+                                String isPresent = document.getString("IsPresent");
 
-                                Calendar mCalendar = Calendar.getInstance();
                                 //set date to calendar
+                                mCalendar = Calendar.getInstance();
                                 mCalendar.set(Calendar.YEAR, Integer.parseInt(year));
                                 mCalendar.set(Calendar.MONTH, (Integer.parseInt(month))-1);
                                 mCalendar.set(Calendar.DAY_OF_MONTH, Integer.parseInt(day));
-                                if(isPresent) {
+                                if(isPresent.equals("present")) {
                                     present=present+1;
                                     events.add(new EventDay(mCalendar, R.drawable.present));
-                                    Log.e("successfully","present done"+String.valueOf(present));
+                                    Log.e("successfully","present done"+present);
                                 }//end if
-                                else{
+                                else if (isPresent.equals("absent")){
                                     absent= absent+1;
                                     events.add(new EventDay(mCalendar, R.drawable.absent));
-                                    Log.e("successfully","absent done"+String.valueOf(absent));
-                                }//end else
-
+                                    Log.e("successfully","absent done"+absent);
+                                }//end else if
+                                else {
+                                    exabsent=exabsent+1;
+                                    events.add(new EventDay(mCalendar, R.drawable.exabsent));
+                                    Log.e("successfully","exabsent done"+exabsent);
+                                }
                             }//end for loop
 
                             //set present count in text view
@@ -178,6 +196,103 @@ public class StudentDetail extends AppCompatActivity {
                     }
                 });//end OnCompleteListiner
 
+        calendarView.setOnCalendarDayClickListener(calendarDay -> {
+            Locale englishLocale = Locale.ENGLISH; // Or Locale.US for US English
+            @SuppressLint("SimpleDateFormat")
+            SimpleDateFormat dateFormat = new SimpleDateFormat("dd_MM_yyyy",englishLocale);
+            dateFormat.setCalendar(calendarDay.getCalendar());
+            Date today = calendarDay.getCalendar().getTime();
+            String selectedDate = dateFormat.format(today);
+            //Toast.makeText(context,selectedDate,Toast.LENGTH_SHORT).show();
+            Log.e("date",selectedDate);
+            StudentUpdateAttendance(selectedDate);
+
+        });
+
+    }//end function pageData
+    private void StudentUpdateAttendance(String Date) {
+        Dialog dialog = new Dialog(this,android.R.style.Theme_Dialog);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setContentView(R.layout.edit_attendance);
+        dialog.setCanceledOnTouchOutside(true);
+        Objects.requireNonNull(dialog.getWindow()).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+
+
+        RadioButton presentRadio = dialog.findViewById(R.id.present);
+        RadioButton absentRadio = dialog.findViewById(R.id.absent);
+        RadioButton exabsentRadio = dialog.findViewById(R.id.exabsent);
+        TextView save = dialog.findViewById(R.id.saveStatus);
+        TextView cancel = dialog.findViewById(R.id.cancel_btn);
+
+        // Assuming you have a reference to your Firestore collection
+        CollectionReference attendanceRef = FirebaseFirestore.getInstance().collection("attendance")
+                .document(courseNumber)
+                .collection(Email);
+
+        // Query Firestore to get the attendance status for the selected date
+        attendanceRef.document(Date)
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        DocumentSnapshot document = task.getResult();
+                        if (document.exists()) {
+                            String status = document.getString("IsPresent");
+                            // Set the appropriate radio button based on the status
+                            if (status != null) {
+                                switch (status) {
+                                    case "present":
+                                        presentRadio.setChecked(true);
+                                        break;
+                                    case "absent":
+                                        absentRadio.setChecked(true);
+                                        break;
+                                    case "exabsent":
+                                        exabsentRadio.setChecked(true);
+                                        break;
+                                    default:
+                                        break;
+                                }
+                            }
+                            dialog.show();
+                        } else {
+                            // Document doesn't exist, show a toast or handle it as per your requirement
+                            Toast.makeText(StudentDetail.this, "يرجى اختيار تاريخ صجيج", Toast.LENGTH_SHORT).show();
+                        }
+                    } else {
+                        Log.e("Firestore", "Error getting document: ", task.getException());
+                    }
+                });
+
+
+        // Saving the updated status back to Firestore
+        save.setOnClickListener(v -> {
+            String newStatus;
+            if (presentRadio.isChecked()) {
+                newStatus = "present";
+            } else if (absentRadio.isChecked()) {
+                newStatus = "absent";
+            } else {
+                newStatus = "exabsent";
+            }
+
+            // Update the status in Firestore
+            attendanceRef.document(Date)
+                    .update("IsPresent", newStatus)
+                    .addOnSuccessListener(aVoid -> {
+                        // Handle success
+                        Log.d("Firestore", "DocumentSnapshot successfully updated!");
+                        dialog.dismiss();
+                        // Refresh the page data after updating
+                        pageData();
+                    })
+                    .addOnFailureListener(e -> {
+                        // Handle failures
+                        Log.w("Firestore", "Error updating document", e);
+                        // You might want to inform the user about the failure
+                    });
+        });
+
+        cancel.setOnClickListener(v -> dialog.dismiss());
     }
 
 }//end class

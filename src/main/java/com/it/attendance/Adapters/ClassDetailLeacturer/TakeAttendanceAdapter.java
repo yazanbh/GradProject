@@ -1,34 +1,25 @@
 package com.it.attendance.Adapters.ClassDetailLeacturer;
 
-import static androidx.constraintlayout.helper.widget.MotionEffect.TAG;
-
 import android.annotation.SuppressLint;
 import android.content.Context;
-        import android.util.Log;
-        import android.view.LayoutInflater;
-        import android.view.View;
-        import android.view.ViewGroup;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.CheckBox;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.Query;
-import com.google.firebase.firestore.QuerySnapshot;
 import com.it.attendance.R;
-import com.it.attendance.lecturer.Class_Detail_lecturer;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -91,15 +82,14 @@ public class TakeAttendanceAdapter extends RecyclerView.Adapter<TakeAttendanceAd
                     if (document.exists()) {
                         Log.d("TAG", "Document exist");
 
-                        boolean boolValue = document.getBoolean("IsPresent");
-                       data.put("IsPresent",boolValue);
+                        boolean boolValue = document.getString("IsPresent").equals("present");
+                       data.put("IsPresent",document.getString("IsPresent"));
                         Log.e("bool value",String.valueOf(boolValue));
                         holder.checkBox.setChecked(boolValue); // Set the checkbox state based on the retrieved value
                     } else {
-                        data.put("IsPresent",false);
+                        data.put("IsPresent","absent");
                         // Handle the case where the document doesn't exist
                         Log.d("TAG", "Document does not exist, the email "+student.getEmail()+" set to absent");
-
                     }
                     db = FirebaseFirestore.getInstance();
                     //document reference for attendance
@@ -126,9 +116,9 @@ public class TakeAttendanceAdapter extends RecyclerView.Adapter<TakeAttendanceAd
             @Override
             public void onClick(View v) {
                 if(holder.checkBox.isChecked()){
-                    data.put("IsPresent",true);
+                    data.put("IsPresent","present");
                 }else {
-                    data.put("IsPresent", false);
+                    data.put("IsPresent", "absent");
                 }
                 db = FirebaseFirestore.getInstance();
 

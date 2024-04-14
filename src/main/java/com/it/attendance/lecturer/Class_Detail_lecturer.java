@@ -294,6 +294,7 @@ public class Class_Detail_lecturer extends AppCompatActivity implements CardNfcA
                         Toast.makeText(Class_Detail_lecturer.this, "Successfully Delete Course", Toast.LENGTH_SHORT).show();
                         startActivity(new Intent(getApplicationContext(), lecturer_Home_Page.class));
                         overridePendingTransition(0, 0);
+                        finish();
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
@@ -708,6 +709,7 @@ public class Class_Detail_lecturer extends AppCompatActivity implements CardNfcA
                             intent.putExtra("name", name);
                             startActivity(intent);
                             overridePendingTransition(0,0);
+
                         } else {
                             Log.w(MotionEffect.TAG, "Error getting documents: ", task.getException());
                         }

@@ -87,6 +87,7 @@ public class profile extends AppCompatActivity {
             pDialogWarining.setTitleText("Logout");
             pDialogWarining.confirmButtonColor(R.color.blue);
             pDialogWarining.cancelButtonColor(R.color.blue);
+
             pDialogWarining.setContentText("Are you sure you want to logout?");
             pDialogWarining.setCancelClickListener("Cancel", new KAlertDialog.KAlertClickListener() {
                 @Override

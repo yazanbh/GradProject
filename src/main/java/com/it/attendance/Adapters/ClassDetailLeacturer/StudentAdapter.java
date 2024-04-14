@@ -5,6 +5,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -59,9 +60,10 @@ Log.e("yazaaaaaaaaaaan",cNumber);
         db = FirebaseFirestore.getInstance();
 
         //list to get IsPresent Boolean if equal to true or false
-        List<Boolean> presentList = new ArrayList<>();
-        presentList.add(true);
-        presentList.add(false);
+        List<String> presentList = new ArrayList<>();
+        presentList.add("present");
+        presentList.add("absent");
+        presentList.add("exabsent");
 
         //document reference for attendance
         CollectionReference collectionRef = db.collection("attendance").document(cNumber).collection(student.getEmail());
@@ -75,24 +77,29 @@ Log.e("yazaaaaaaaaaaan",cNumber);
                         if (task.isSuccessful()) {
                             int present=0;
                             int absent=0;
+                            int exabsent=0;
 
                             for (DocumentSnapshot document : task.getResult()) {
-                                boolean isPresent = document.getBoolean("IsPresent");
+                                String isPresent = document.getString("IsPresent");
                                 Log.e("successfully", "Adapter done");
 
-                                if (isPresent) {
+                                if (isPresent.equals("present")) {
                                     present = present + 1;
                                     Log.e("successfully", "present done" + String.valueOf(present));
                                 }//end if
-                                else {
+                                else if (isPresent.equals("absent")){
                                     absent = absent + 1;
                                     Log.e("successfully", "absent done" + String.valueOf(absent));
                                 }//end else
+                                else {
+                                    holder.linearLayout.setVisibility(View.VISIBLE);
+                                    exabsent = exabsent +1;
+                                }
                             }//end for loop
 
                             holder.Present.setText(String.valueOf(present));
                             holder.Absent.setText(String.valueOf(absent));
-
+                            holder.ExAbsent.setText(String.valueOf(exabsent));
                         }
                     }
                 }).addOnFailureListener(new OnFailureListener() {
@@ -114,7 +121,8 @@ Log.e("yazaaaaaaaaaaan",cNumber);
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
-        private TextView nameText,emailText,Absent,Present;
+        private TextView nameText,emailText,Absent,Present,ExAbsent;
+        private LinearLayout linearLayout;
 
         public ViewHolder(View itemView, AttendanceViewInterface recyclerViewInterface) {
             super(itemView);
@@ -122,6 +130,8 @@ Log.e("yazaaaaaaaaaaan",cNumber);
             emailText = itemView.findViewById(R.id.student_regNo_detail_adapter);
             Absent=itemView.findViewById(R.id.absent);
             Present=itemView.findViewById(R.id.present);
+            ExAbsent=itemView.findViewById(R.id.exabsent);
+            linearLayout=itemView.findViewById(R.id.exABSENT);
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

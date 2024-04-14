@@ -35,7 +35,7 @@ public class Class_detail_std extends AppCompatActivity {
     ImageView img_btn;
     TextView cname,PresentCount,AbsentCount,percent;
     SwipeRefreshLayout swipeLayout;
-    double present,absent;
+    double present,absent, exabsent;
     ChipNavigationBar bottomNavigationView;
 
 
@@ -111,6 +111,7 @@ public class Class_detail_std extends AppCompatActivity {
 
         present=0;
         absent=0;
+        exabsent=0;
         //set course name in text view of top page
         cname=findViewById(R.id.CourseName);
         cname.setText(courseName);
@@ -126,9 +127,10 @@ public class Class_detail_std extends AppCompatActivity {
         db = FirebaseFirestore.getInstance();
 
         //list to get IsPresent Boolean if equal to true or false
-        List<Boolean> presentList = new ArrayList<>();
-        presentList.add(true);
-        presentList.add(false);
+        List<String> presentList = new ArrayList<>();
+        presentList.add("present");
+        presentList.add("absent");
+        presentList.add("exabsent");
 
         //document reference for attendance
         CollectionReference collectionRef = db.collection("attendance").document(courseNumber).collection(Email);
@@ -143,23 +145,30 @@ public class Class_detail_std extends AppCompatActivity {
                                 String day = document.getString("day");
                                 String month = document.getString("month");
                                 String year = document.getString("year");
-                                boolean isPresent = document.getBoolean("IsPresent");
+                                String isPresent = document.getString("IsPresent");
 
                                 Calendar mCalendar = Calendar.getInstance();
                                 //set date to calendar
                                 mCalendar.set(Calendar.YEAR, Integer.parseInt(year));
                                 mCalendar.set(Calendar.MONTH, (Integer.parseInt(month))-1);
                                 mCalendar.set(Calendar.DAY_OF_MONTH, Integer.parseInt(day));
-                                if(isPresent) {
+                                if(isPresent.equals("present")) {
                                     present=present+1;
                                     events.add(new EventDay(mCalendar, R.drawable.present));
-                                    Log.e("successfully","present done"+String.valueOf(present));
+                                    Log.e("successfully","present done"+ present);
                                 }//end if
-                                else{
+                                else if (isPresent.equals("absent")){
                                     absent= absent+1;
                                     events.add(new EventDay(mCalendar, R.drawable.absent));
-                                    Log.e("successfully","absent done"+String.valueOf(absent));
-                                }//end else
+                                    Log.e("successfully","absent done"+absent);
+                                }//end if else
+
+                                else if (isPresent.equals("exabsent")){
+                                    exabsent = exabsent + 1;
+                                    events.add(new EventDay(mCalendar, R.drawable.exabsent));
+                                    Log.e("successfully","absent done"+exabsent);
+
+                                }
 
                             }//end for loop
 

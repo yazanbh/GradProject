@@ -160,8 +160,8 @@ public class lecturer_Home_Page extends AppCompatActivity implements RecyclerVie
                     for(DocumentChange dc : value.getDocumentChanges()){
                         if(dc.getType()==DocumentChange.Type.ADDED){
                             courseArrayList.add(dc.getDocument().toObject(course.class));
+                            myAdapter.notifyDataSetChanged();
                         }
-                        myAdapter.notifyDataSetChanged();
                     }
                 }//end if
             });
@@ -253,9 +253,16 @@ public class lecturer_Home_Page extends AppCompatActivity implements RecyclerVie
                                 //create the course
                                 userDocRef.set(updates).addOnCompleteListener(task1 -> {
                                     if (task1.isSuccessful()) {
+                                        courseArrayList.clear();
+                                        EventChangeListener();
+                                        myAdapter.notifyDataSetChanged();
+
+
                                         pDialog.dismissWithAnimation();
                                         Log.d("TAG", "Course saved successfully");
                                         Toast.makeText(lecturer_Home_Page.this, "Successfully created course", Toast.LENGTH_SHORT).show();
+
+
                                     } else {
                                         Log.d("TAG", "Error saving Course : ", task1.getException());
                                         Toast.makeText(lecturer_Home_Page.this, "Error creation course", Toast.LENGTH_SHORT).show();
@@ -290,7 +297,8 @@ public class lecturer_Home_Page extends AppCompatActivity implements RecyclerVie
         startActivity(intent);
 */
 
-       db.collection("course")
+       db.collection("course").whereEqualTo("CreatedBy",FirebaseAuth.getInstance().getCurrentUser().getEmail().toString())
+               .orderBy("cNumber", Query.Direction.ASCENDING)
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
@@ -303,14 +311,14 @@ public class lecturer_Home_Page extends AppCompatActivity implements RecyclerVie
                             String courseName = documents.get(postion).getString("cName");
                             String courseNumber = documents.get(postion).getString("cNumber");
                             String courseSection = documents.get(postion).getString("cSection");
-
+                            Log.e("name",courseName + courseNumber + courseSection);
                             // Start Activity 2 and pass the string as an intent extra
                             Intent intent = new Intent(lecturer_Home_Page.this, Class_Detail_lecturer.class);
                             intent.putExtra("name", courseName);
                             intent.putExtra("number", courseNumber+"sec"+courseSection);
                             startActivity(intent);
                             overridePendingTransition(0,0);
-
+                            finish();
                         } else {
                             Log.w(TAG, "Error getting documents: ", task.getException());
                         }
