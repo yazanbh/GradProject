@@ -9,12 +9,9 @@ import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -74,40 +71,37 @@ public class TakeAttendanceAdapter extends RecyclerView.Adapter<TakeAttendanceAd
         //get attendance status
         DocumentReference docRef = db.collection("attendance")
                 .document(cNumber).collection(student.getEmail()).document(getDate());
-        docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if (task.isSuccessful()) {
-                    DocumentSnapshot document = task.getResult();
-                    if (document.exists()) {
-                        Log.d("TAG", "Document exist");
+        docRef.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                DocumentSnapshot document = task.getResult();
+                if (document.exists()) {
+                    Log.d("TAG", "Document exist");
 
-                        boolean boolValue = document.getString("IsPresent").equals("present");
-                       data.put("IsPresent",document.getString("IsPresent"));
-                        Log.e("bool value",String.valueOf(boolValue));
-                        holder.checkBox.setChecked(boolValue); // Set the checkbox state based on the retrieved value
-                    } else {
-                        data.put("IsPresent","absent");
-                        // Handle the case where the document doesn't exist
-                        Log.d("TAG", "Document does not exist, the email "+student.getEmail()+" set to absent");
-                    }
-                    db = FirebaseFirestore.getInstance();
-                    //document reference for attendance
-                    CollectionReference collectionRef = db.collection("attendance").document(cNumber).collection(student.getEmail());
-                    collectionRef.document(today).set(data).addOnSuccessListener(new OnSuccessListener<Void>() {
-                        @Override
-                        public void onSuccess(Void unused) {
-                            Log.d("TakeAttendanceAdapter", "auto attendance set");
-                        }
-                    }) .addOnFailureListener(e -> {
-                        Log.e("TAG", "Error set auto attendance", e);
-                        // Handle errors gracefully (e.g., display error message to user)
-                    });
-
+                    boolean boolValue = document.getString("IsPresent").equals("present");
+                   data.put("IsPresent",document.getString("IsPresent"));
+                    Log.e("bool value",String.valueOf(boolValue));
+                    holder.checkBox.setChecked(boolValue); // Set the checkbox state based on the retrieved value
                 } else {
-                    // Handle any errors that occurred during the get operation
-                    Log.d("TAG", "Error getting document: ", task.getException());
+                    data.put("IsPresent","absent");
+                    // Handle the case where the document doesn't exist
+                    Log.d("TAG", "Document does not exist, the email "+student.getEmail()+" set to absent");
                 }
+                db = FirebaseFirestore.getInstance();
+                //document reference for attendance
+                CollectionReference collectionRef = db.collection("attendance").document(cNumber).collection(student.getEmail());
+                collectionRef.document(today).set(data).addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void unused) {
+                        Log.d("TakeAttendanceAdapter", "auto attendance set");
+                    }
+                }) .addOnFailureListener(e -> {
+                    Log.e("TAG", "Error set auto attendance", e);
+                    // Handle errors gracefully (e.g., display error message to user)
+                });
+
+            } else {
+                // Handle any errors that occurred during the get operation
+                Log.d("TAG", "Error getting document: ", task.getException());
             }
         });
 

@@ -1,6 +1,6 @@
 package com.it.attendance.student;
-import static android.provider.Settings.*;
-import androidx.appcompat.app.AppCompatActivity;
+
+import static android.provider.Settings.Secure;
 
 import android.content.Context;
 import android.content.Intent;
@@ -10,16 +10,17 @@ import android.util.Log;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.developer.kalert.KAlertDialog;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.it.attendance.MainActivity;
 import com.it.attendance.R;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -57,21 +58,17 @@ public class Signup_std extends AppCompatActivity {
                 pDialog.show();
                 mAuth.createUserWithEmailAndPassword(Email.getText().toString(), pass1.getText().toString())
                         .addOnSuccessListener(authResult -> {
-                           /* mAuth.getCurrentUser().sendEmailVerification().addOnCompleteListener(new OnCompleteListener<Void>() {
-                               @Override
-                               public void onComplete(@NonNull Task<Void> task) {
-                                   if(task.isSuccessful()){
-                                       // User successfully signed up.
-                                       Toast.makeText(Sign_Up_Page.this, "user Registered Successfully, Please verify your email. ", Toast.LENGTH_SHORT).show();
-                                   }
-                               }
-                           });*/
+                            mAuth.getCurrentUser().sendEmailVerification().addOnCompleteListener(task -> {
+                                if(task.isSuccessful()){
+                                    // User successfully signed up.
+                                    Toast.makeText(Signup_std.this, "user Registered Successfully, Please verify your email. ", Toast.LENGTH_SHORT).show();
+                                }
+                            });
                             //store into firestore
                             FirebaseFirestore db = FirebaseFirestore.getInstance();
                             CollectionReference usersRef = db.collection("students");
                             DocumentReference userDocRef = usersRef.document(Email.getText().toString());
                             Map<String, Object> updates = new HashMap<>();
-                            updates.put("deviceId", deviceId);
                             updates.put("name", Name.getText().toString());
                             updates.put("email", Email.getText().toString());
 

@@ -118,12 +118,6 @@ public class HomePage_std extends AppCompatActivity implements com.it.attendance
                         else{
                             Paper.book().write("card",false);
                         }
-                        if(document.getString("phone")!=null){
-                            String phoneNumber =document.getString("phone");
-                            Paper.book().write("phone",phoneNumber.substring(0, 3) + " "
-                                    + phoneNumber.substring(3));
-                        }
-
                         // Do something with the data
                         Log.d(ContentValues.TAG, "Document existed");
 
@@ -141,8 +135,9 @@ public class HomePage_std extends AppCompatActivity implements com.it.attendance
 
     @SuppressLint("NotifyDataSetChanged")
     private void EventChangeListener() {
-        String stdEmail= FirebaseAuth.getInstance().getCurrentUser().getEmail();
+        String stdEmail= Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getEmail();
         //filtering the courses for the own lecturer who has created it and show in home page
+        assert stdEmail != null;
         db.collection("course")
                 .whereArrayContains("enrollStudents",stdEmail).orderBy("cNumber", Query.Direction.ASCENDING)
                 .addSnapshotListener((value, error) -> {
@@ -167,17 +162,8 @@ public class HomePage_std extends AppCompatActivity implements com.it.attendance
     @Override
     public void onItemClick(int postion) {
 
-       /* String name= findViewById(R.id.CourseName_adapter).toString();
-        String number= findViewById(R.id.CourseID_adapter).toString();
-        Intent intent = new Intent(lecturer_Home_Page.this, Class_Detail_lecturer.class);
-        intent.putExtra("Cname",name);
-        intent.putExtra("Cnumber",number);
-        overridePendingTransition(0,0);
-        startActivity(intent);
-*/
-
         db.collection("course")
-                .whereArrayContains("enrollStudents",FirebaseAuth.getInstance().getCurrentUser().getEmail())
+                .whereArrayContains("enrollStudents", Objects.requireNonNull(Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getEmail()))
                 .orderBy("cNumber", Query.Direction.ASCENDING)
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {

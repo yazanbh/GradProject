@@ -113,9 +113,11 @@ public class StudentDetail extends AppCompatActivity {
         CalendarView calendarView = findViewById(R.id.calendarView);
         List<EventDay> events = new ArrayList<>();
          Email = getIntent().getStringExtra("Email");
+        assert Email != null;
         Log.e("student email",Email);
          name = getIntent().getStringExtra("name");
          courseNumber = getIntent().getStringExtra("number");
+        assert courseNumber != null;
         Log.e("course number",courseNumber);
 
         present=0;
@@ -144,6 +146,7 @@ public class StudentDetail extends AppCompatActivity {
         Query query = collectionRef.whereIn("IsPresent",presentList);
         query.get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @SuppressLint("SetTextI18n")
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if (task.isSuccessful()) {
@@ -155,9 +158,13 @@ public class StudentDetail extends AppCompatActivity {
 
                                 //set date to calendar
                                 mCalendar = Calendar.getInstance();
+                                assert year != null;
                                 mCalendar.set(Calendar.YEAR, Integer.parseInt(year));
+                                assert month != null;
                                 mCalendar.set(Calendar.MONTH, (Integer.parseInt(month))-1);
+                                assert day != null;
                                 mCalendar.set(Calendar.DAY_OF_MONTH, Integer.parseInt(day));
+                                assert isPresent != null;
                                 if(isPresent.equals("present")) {
                                     present=present+1;
                                     events.add(new EventDay(mCalendar, R.drawable.present));

@@ -16,25 +16,16 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
-
-import org.apache.poi.hssf.usermodel.HSSFDateUtil;
 import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellValue;
-import org.apache.poi.ss.usermodel.FormulaEvaluator;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.ss.util.WorkbookUtil;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ExcelReader {
     public static void readExcelFile(Context context, Uri uri, String CourseNumber) throws IOException {
@@ -165,18 +156,8 @@ public class ExcelReader {
                 data.put("Email", Email);
                 // Add the document to Firestore
                 docReff.set(data)
-                        .addOnSuccessListener(new OnSuccessListener<Void>() {
-                            @Override
-                            public void onSuccess(Void aVoid) {
-                                Log.d("TAG", "attendance document created successfully "+Email);
-                            }
-                        })
-                        .addOnFailureListener(new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull Exception e) {
-                                Log.w("TAG", "Error creating attendance document "+Email, e);
-                            }
-                        });
+                        .addOnSuccessListener(aVoid -> Log.d("TAG", "attendance document created successfully "+Email))
+                        .addOnFailureListener(e -> Log.w("TAG", "Error creating attendance document "+Email, e));
                 //end docReff
 
             }//end for loop

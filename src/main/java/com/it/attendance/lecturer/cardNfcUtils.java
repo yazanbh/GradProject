@@ -3,16 +3,12 @@ package com.it.attendance.lecturer;
 
 import android.app.Activity;
 import android.app.PendingIntent;
-import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.nfc.NfcAdapter;
 import android.nfc.tech.IsoDep;
 import android.nfc.tech.NfcA;
 
-/**
- * Created by pro100svitlo on 31.03.16.
- */
 public class cardNfcUtils {
 
     private final NfcAdapter mNfcAdapter;

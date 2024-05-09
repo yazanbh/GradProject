@@ -95,7 +95,7 @@ public class Class_Detail_lecturer extends AppCompatActivity implements CardNfcA
     private String mCardWithLockedNfcMessage;
     private AlertDialog mTurnNfcDialog;
     private CardNfcAsyncTask mCardNfcAsyncTask;
-    private boolean mIsScanNow;
+    private boolean mIsScanNow,isNfcDialogShown = false;
     int counter=1;
 
 
@@ -126,6 +126,7 @@ public class Class_Detail_lecturer extends AppCompatActivity implements CardNfcA
                 delete(CourseNumber);
                 return true;
             }
+
             return true;
         });
         //bottom nav bar
@@ -354,68 +355,74 @@ public class Class_Detail_lecturer extends AppCompatActivity implements CardNfcA
         //check if the student have account in the app or not
         DocumentReference docRef = db.collection("students")
                 .document(stdEmail);
-        docRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-            @Override
-            public void onSuccess(DocumentSnapshot documentSnapshot) {
-                if (documentSnapshot.exists()) {
-                    // student have an account exists & add student to the course in enrollStudents filed in firebase
-                    String CourseNumber = getIntent().getStringExtra("number");
-                    DocumentReference docRef = db.collection("course").document(CourseNumber);
-                    Map<String, Object> updateData = new HashMap<>();
-                    updateData.put("enrollStudents",  FieldValue.arrayUnion(stdEmail));
-                    docRef.update(updateData)
-                            .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                @Override
-                                public void onSuccess(Void aVoid) {
-                                    stdArrayList.clear();
-                                    getEnrollStudents();
-                                    stdAdapter.notifyDataSetChanged();
-                                    takeAttendanceAdapter.notifyDataSetChanged();
-                                    Toast.makeText(Class_Detail_lecturer.this, "Student added successfully to the course!", Toast.LENGTH_SHORT).show();
-                                }
-                            })
-                            .addOnFailureListener(new OnFailureListener() {
-                                @Override
-                                public void onFailure(@NonNull Exception e) {
-                                    Log.e("TAG", "Error adding student email", e);
-                                }
-                            });
+        docRef.get().addOnSuccessListener(documentSnapshot -> {
+            if (documentSnapshot.exists()) {
+                // student have an account exists & add student to the course in enrollStudents filed in firebase
+                String CourseNumber = getIntent().getStringExtra("number");
+                DocumentReference docRef1 = db.collection("course").document(CourseNumber);
+                Map<String, Object> updateData = new HashMap<>();
+                updateData.put("enrollStudents",  FieldValue.arrayUnion(stdEmail));
+                docRef1.update(updateData)
+                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void aVoid) {
+                                stdArrayList.clear();
+                                getEnrollStudents();
+                                stdAdapter.notifyDataSetChanged();
+                                takeAttendanceAdapter.notifyDataSetChanged();
+                                Toast.makeText(Class_Detail_lecturer.this, "Student added successfully to the course!", Toast.LENGTH_SHORT).show();
+                            }
+                        })
+                        .addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Log.e("TAG", "Error adding student email", e);
+                            }
+                        });
 
 
-                } else {
-                    // Document does not exist & save username and email to firestore
-                    Log.e("TAG", "Error student dont have account ", null);
-                    FirebaseFirestore db = FirebaseFirestore.getInstance();
-                    DocumentReference docRef = db.collection("students")
-                            .document(stdEmail);
-                    docRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                        @Override
-                        public void onSuccess(DocumentSnapshot documentSnapshot) {
-                            if (!documentSnapshot.exists()) {
-                                // Email does not exist in Firestore
-                                Log.e("TAG", "creating a student account ", null);
-                                CollectionReference usersRef = db.collection("students");
-                                DocumentReference userDocRef = usersRef.document(stdEmail);
-                                Map<String, Object> updates = new HashMap<>();
-                                updates.put("name", stdName);
-                                updates.put("email", stdEmail);
+            } else {
+                // Document does not exist & save username and email to firestore
+                Log.e("TAG", "Error student dont have account ", null);
+                FirebaseFirestore db = FirebaseFirestore.getInstance();
+                DocumentReference docRef1 = db.collection("students")
+                        .document(stdEmail);
+                //end onSuccess
+                docRef1.get().addOnSuccessListener(documentSnapshot1 -> {
+                    if (!documentSnapshot1.exists()) {
+                        // Email does not exist in Firestore
+                        Log.e("TAG", "creating a student account ", null);
+                        CollectionReference usersRef = db.collection("students");
+                        DocumentReference userDocRef = usersRef.document(stdEmail);
+                        Map<String, Object> updates = new HashMap<>();
+                        updates.put("name", stdName);
+                        updates.put("email", stdEmail);
 
-                                userDocRef.set(updates).addOnCompleteListener(task -> {
-                                    if (task.isSuccessful()) {
-                                        Log.d("TAG", "create a student account successfully");
-                                        AddStudentToCourse(stdEmail,stdName);
+                        userDocRef.set(updates).addOnCompleteListener(task -> {
+                            if (task.isSuccessful()) {
+                                Log.d("TAG", "create a student account successfully");
+                                AddStudentToCourse(stdEmail,stdName);
 
-                                    } else {
-                                        Log.d("TAG", "Error on create a student account ", task.getException());
-                                    }
-                                });
-                            } //end if statement
+                            } else {
+                                Log.d("TAG", "Error on create a student account ", task.getException());
+                            }
+                        });
+                    } //end if statement
 
-                        }//end onSuccess
-                    });
 
-                }
+                });
+
             }
+            DocumentReference docReff = db.collection("attendance").document(CourseNumber).collection(stdEmail).document("test");
+            // Create a Map to store the document's data (replace with your actual data)
+            Map<String, Object> data = new HashMap<>();
+            data.put("Email", stdEmail);
+            // Add the document to Firestore
+            docReff.set(data)
+                    .addOnSuccessListener(aVoid -> Log.d("TAG", "attendance document created successfully "+stdEmail))
+                    .addOnFailureListener(e -> Log.w("TAG", "Error creating attendance document "+stdEmail, e));
+            //end docReff
+
         });
     }//end function
 
@@ -432,7 +439,7 @@ public class Class_Detail_lecturer extends AppCompatActivity implements CardNfcA
 
         }
     }//end function
-    @SuppressLint("SetTextI18n")
+    @SuppressLint({"SetTextI18n", "NotifyDataSetChanged"})
     @Override protected void onActivityResult(int requestCode, int resultCode,
                                               @Nullable Intent data) {
         if(requestCode==100 && resultCode==RESULT_OK && data!=null){
@@ -441,11 +448,13 @@ public class Class_Detail_lecturer extends AppCompatActivity implements CardNfcA
             ExcelReader.existed(this,uri,CourseNumber); // adding student to firebase who use nfc tag
             try {
                 ExcelReader.readExcelFile(this, uri,CourseNumber); //add students to course
+                takeAttendanceAdapter.notifyDataSetChanged();
+                stdAdapter.notifyDataSetChanged();
+
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-            takeAttendanceAdapter.notifyDataSetChanged();
-            stdAdapter.notifyDataSetChanged();
+
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
@@ -481,14 +490,23 @@ public class Class_Detail_lecturer extends AppCompatActivity implements CardNfcA
     protected void onResume() {
         super.onResume();
         mIntentFromCreate = false;
-            if (mNfcAdapter != null && !mNfcAdapter.isEnabled()) {
-                showTurnOnNfcDialog();
-            } else if (mNfcAdapter != null) {
-                Log.e("hamza", "nfc activeated");
-                mCardNfcUtils.enableDispatch();
 
-        }//end if(start_take_attendance)
-    }
+        if (!isNfcDialogShown && mNfcAdapter != null && !mNfcAdapter.isEnabled()) {
+            // NFC is disabled, show turn on NFC dialog
+            showTurnOnNfcDialog();
+            isNfcDialogShown = true; // Set the flag to true after showing the dialog
+        } else if (mNfcAdapter != null) {
+            // NFC is enabled, start NFC reading
+            mCardNfcUtils.enableDispatch();
+            Log.e(TAG, "nfc activated");
+
+        }
+        // Handle NFC settings result if needed
+        if (mIsScanNow) {
+            // If NFC scan was in progress, resume NFC card reading
+            startNfcReadCard();
+        }
+    }//end onResume
 
 
     @Override
@@ -526,8 +544,7 @@ public class Class_Detail_lecturer extends AppCompatActivity implements CardNfcA
 
 
     private void showTurnOnNfcDialog(){
-        if (mTurnNfcDialog == null) {
-
+        if (!isNfcDialogShown) {
             String title = "NFC is turned off.";
             String mess = "You need turn on NFC module for scanning. Wish turn on it now?";
             String pos = "Turn on";
@@ -537,26 +554,14 @@ public class Class_Detail_lecturer extends AppCompatActivity implements CardNfcA
             dialog.setContentText(mess);
             dialog.confirmButtonColor(R.color.blue);
             dialog.cancelButtonColor(R.color.blue);
-            dialog.setConfirmClickListener(pos, new KAlertDialog.KAlertClickListener() {
-                        @Override
-                        public void onClick(KAlertDialog kAlertDialog) {
-                            // Send the user to the settings page and hope they turn it on
-                            if (android.os.Build.VERSION.SDK_INT >= 16) {
-                                startActivity(new Intent(android.provider.Settings.ACTION_NFC_SETTINGS));
-                                finish();
-                            } else {
-                                startActivity(new Intent(android.provider.Settings.ACTION_WIRELESS_SETTINGS));
-                                finish();
-                            }
+            dialog.setConfirmClickListener(pos, kAlertDialog -> {
+                // Send the user to the settings page and hope they turn it on
+                    startActivity(new Intent(android.provider.Settings.ACTION_WIRELESS_SETTINGS));
+                    isNfcDialogShown=true;
+                    dialog.dismiss();
 
-                        }
-                    });
-            dialog.setCancelClickListener(neg, new KAlertDialog.KAlertClickListener() {
-                        @Override
-                        public void onClick(KAlertDialog kAlertDialog) {
-                            dialog.dismissWithAnimation();
-                        }
-                    })
+            });
+            dialog.setCancelClickListener(neg, kAlertDialog -> dialog.dismissWithAnimation())
                     .show();
 
     }
@@ -625,7 +630,7 @@ public class Class_Detail_lecturer extends AppCompatActivity implements CardNfcA
             data.put("year", today.substring(6, 10));
             data.put("Email", Email);
             data.put("name", Name);
-            data.put("IsPresent", true);
+            data.put("IsPresent", "present");
 
 
             CollectionReference collectionRef = db.collection("attendance").document(CourseNumber).collection(Email);

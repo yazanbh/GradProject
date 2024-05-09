@@ -2,13 +2,9 @@ package com.it.attendance.student;
 
 import static android.content.ContentValues.TAG;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
-import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.inputmethod.InputMethodManager;
@@ -16,11 +12,14 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.developer.kalert.KAlertDialog;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -84,62 +83,51 @@ public class Login_std extends AppCompatActivity {
             pDialog.show();
             // Perform Firebase Authentication
             mAuth.signInWithEmailAndPassword(email.trim(), password.trim())
-                    .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                        @Override
-                        public void onComplete(@NonNull Task<AuthResult> task) {
+                    .addOnCompleteListener(task -> {
 
-                            if (task.isSuccessful()) {
-                               // Toast.makeText(Login_std.this, "Authentication successfully.", Toast.LENGTH_SHORT).show();
-                                // Get a reference to the document
-                                DocumentReference docRef = FirebaseFirestore.getInstance()
-                                        .collection("students").document(mAuth.getCurrentUser().getEmail());
-                                // Get the document
-                                docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                                    @Override
-                                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                                        if (task.isSuccessful()) {
-                                            DocumentSnapshot document = task.getResult();
-                                            if (document.exists()) {
-                                                // Extract data from the document
-                                                Paper.init(getApplicationContext());
-                                                Paper.book().destroy();
-                                                Paper.book().write("Email", email);
-                                                Paper.book().write("Password", password);
-                                                Paper.book().write("isLoggedIn", "true");
-                                                Paper.book().write("type", "student");
-                                             //   Paper.book().write("name",document.getString("name"));
+                        if (task.isSuccessful()) {
+                            // Get a reference to the document
 
-                                                // Do something with the data
-                                                Log.d(TAG, "Document existed");
-                                            } else {
-                                                Log.d(TAG, "No such document!");
-                                            }
-                                        } else {
-                                            Log.w(TAG, "Error getting document", task.getException());
-                                        }
-                                    }
-                                });
-
-                                Intent intent = new Intent(Login_std.this, HomePage_std.class);
-                                pDialog.dismissWithAnimation();
-                                startActivity(intent);
-
-                            }
-                            else {
-                                pDialog.dismissWithAnimation();
-                                // If sign in fails, display a message to the user.
-                                Toast.makeText(Login_std.this, "Authentication failed.",
-                                        Toast.LENGTH_SHORT).show();
-                            }
-                            /*
                             //check if email is verified or not
                             FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
                             if (user != null) {
                                 if (user.isEmailVerified()) {
                                     // User is verified, proceed with the app
 
-                                    // copy the code from up to the comment and paste it here
+                                    DocumentReference docRef = FirebaseFirestore.getInstance()
+                                            .collection("students").document(mAuth.getCurrentUser().getEmail());
+                                    // Get the document
+                                    docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                            if (task.isSuccessful()) {
+                                                DocumentSnapshot document = task.getResult();
+                                                if (document.exists()) {
+                                                    // Extract data from the document
+                                                    Paper.init(getApplicationContext());
+                                                    Paper.book().destroy();
+                                                    Paper.book().write("Email", email);
+                                                    Paper.book().write("Password", password);
+                                                    Paper.book().write("isLoggedIn", "true");
+                                                    Paper.book().write("type", "student");
+                                                    //   Paper.book().write("name",document.getString("name"));
 
+                                                    // Do something with the data
+                                                    Log.d(TAG, "Document existed");
+                                                } else {
+                                                    Log.d(TAG, "No such document!");
+                                                }
+                                            } else {
+                                                Log.w(TAG, "Error getting document", task.getException());
+                                            }
+                                        }
+                                    });
+
+                                    Toast.makeText(Login_std.this, "Authentication Successfully.", Toast.LENGTH_SHORT).show();
+
+                                    Intent intent = new Intent(Login_std.this, HomePage_std.class);
+                                    pDialog.dismissWithAnimation();
+                                    startActivity(intent);
 
                                 }
                                 else {
@@ -151,17 +139,30 @@ public class Login_std extends AppCompatActivity {
                                                 public void onComplete(@NonNull Task<Void> task) {
                                                     if (task.isSuccessful()) {
                                                         Toast.makeText(Login_std.this, "Verification email sent again!", Toast.LENGTH_SHORT).show();
+                                                        pDialog.dismissWithAnimation();
+
                                                     } else {
+                                                        pDialog.dismissWithAnimation();
                                                         Toast.makeText(Login_std.this, "Error sending verification email!", Toast.LENGTH_SHORT).show();
                                                     }
                                                 }
                                             });
                                 }
-                            }*/
+                            }
 
 
 
                         }
+                        else {
+                            pDialog.dismissWithAnimation();
+                            // If sign in fails, display a message to the user.
+                            Toast.makeText(Login_std.this, "Authentication failed.",
+                                    Toast.LENGTH_SHORT).show();
+                        }
+
+
+
+
                     });
         }//end if
 

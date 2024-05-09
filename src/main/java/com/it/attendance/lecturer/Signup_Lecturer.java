@@ -63,15 +63,12 @@ public class Signup_Lecturer extends AppCompatActivity {
                 pDialog.show();
                 mAuth.createUserWithEmailAndPassword(Email.getText().toString(), pass1.getText().toString())
                         .addOnSuccessListener(authResult -> {
-                           /* mAuth.getCurrentUser().sendEmailVerification().addOnCompleteListener(new OnCompleteListener<Void>() {
-                               @Override
-                               public void onComplete(@NonNull Task<Void> task) {
-                                   if(task.isSuccessful()){
-                                       // User successfully signed up.
-                                       Toast.makeText(Sign_Up_Page.this, "user Registered Successfully, Please verify your email. ", Toast.LENGTH_SHORT).show();
-                                   }
-                               }
-                           });*/
+                            mAuth.getCurrentUser().sendEmailVerification().addOnCompleteListener(task -> {
+                                if(task.isSuccessful()){
+                                    // User successfully signed up.
+                                    Toast.makeText(Signup_Lecturer.this, "user Registered Successfully, Please verify your email. ", Toast.LENGTH_SHORT).show();
+                                }
+                            });
                             Toast.makeText(Signup_Lecturer.this, "Lecturer Registered Successfully. ", Toast.LENGTH_SHORT).show();
                             pDialog.dismissWithAnimation();
                             //store into firestore
@@ -79,7 +76,6 @@ public class Signup_Lecturer extends AppCompatActivity {
                             CollectionReference usersRef = db.collection("lecturer");
                             DocumentReference userDocRef = usersRef.document(Email.getText().toString());
                             Map<String, Object> updates = new HashMap<>();
-                            updates.put("deviceId", deviceId);
                             updates.put("name", Name.getText().toString());
                             updates.put("email", Email.getText().toString());
 
@@ -91,7 +87,6 @@ public class Signup_Lecturer extends AppCompatActivity {
                                     Log.d("TAG", "Error saving device ID: ", task.getException());
                                 }
                             });
-
                             //move to login page
                             Intent intent = new Intent(Signup_Lecturer.this, MainActivity.class);
                             startActivity(intent);

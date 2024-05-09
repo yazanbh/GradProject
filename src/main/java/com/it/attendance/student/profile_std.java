@@ -79,13 +79,6 @@ public class profile_std extends AppCompatActivity {
         String uname =Paper.book().read("name");
         username.setText(uname);
 
-
-        //set user phone
-        TextView phone = findViewById(R.id.phone);
-        String phoneNumber = Paper.book().read("phone");
-        phone.setText(phoneNumber);
-
-
         //LogOut
         ImageView logout = findViewById(R.id.LogOut);
         logout.setOnClickListener(view -> {
@@ -151,7 +144,7 @@ public class profile_std extends AppCompatActivity {
             imageView.setImageResource(0);
         }
 
-        //add card and phone number
+        //add university card
         LinearLayout UID = findViewById(R.id.UnversityID);
         boolean card = Paper.book().read("card");
         if(card){
