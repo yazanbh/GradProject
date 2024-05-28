@@ -11,6 +11,7 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
@@ -49,7 +50,15 @@ public class HomePage_std extends AppCompatActivity implements com.it.attendance
         //initilaize firestore
         db = FirebaseFirestore.getInstance();
 
+        boolean isDarkMode = Paper.book().read("DarkMode",false);
+        if(isDarkMode){
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+        }
+        else{
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+        }
 
+        //go to another page from navbar
         //initialize bottom navbar
         bottomNavigationView = findViewById(R.id.BottomNavigationView);
         bottomNavigationView.setItemSelected(R.id.home,true);
@@ -65,6 +74,7 @@ public class HomePage_std extends AppCompatActivity implements com.it.attendance
                new Handler().postDelayed(() -> bottomNavigationView.setItemSelected(R.id.home,false), 3000);
             }
         });
+
 
 
         //recyclerview
@@ -91,10 +101,6 @@ public class HomePage_std extends AppCompatActivity implements com.it.attendance
 
             }
         });
-        //go to another page from navbar
-
-
-
 
         // Get a reference to the document
         FirebaseAuth mAuth = FirebaseAuth.getInstance();

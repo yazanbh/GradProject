@@ -1,7 +1,5 @@
 package com.it.attendance.lecturer;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -11,6 +9,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 
 import com.developer.kalert.KAlertDialog;
 import com.google.firebase.auth.FirebaseAuth;
@@ -32,6 +33,16 @@ public class Login_lecturer extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.signin_teacher);
+
+        boolean isDarkMode = Paper.book().read("DarkMode",false);
+        if(isDarkMode){
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+        }
+        else{
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+        }
+
+
         //initilize the variables
         email=findViewById(R.id.teacher_email);
         pass=findViewById(R.id.teacher_password);
@@ -112,8 +123,8 @@ public class Login_lecturer extends AppCompatActivity {
             email.requestFocus();
             t=false;
         }
-        if(password.isEmpty() || password.length()<7){
-            pass.setError("password must be 7 character at least");
+        if(password.isEmpty() || password.length()<8){
+            pass.setError("password must be 8 character at least");
             pass.requestFocus();
             t=false;
         }

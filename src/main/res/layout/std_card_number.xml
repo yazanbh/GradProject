@@ -3,7 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-   android:orientation="vertical">
+   android:orientation="vertical"
+    android:background="@color/backgroundColor">
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -39,7 +40,8 @@
                 android:layout_gravity="center"
                 android:layout_marginTop="50dp"
                 android:text="@string/nfc_msg"
-                android:textAlignment="center" />
+                android:textAlignment="center"
+                android:textColor="@color/textColor"/>
 
         </com.skyfishjy.library.RippleBackground>
 
@@ -47,17 +49,20 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/stroke_top"
+            android:backgroundTint="@color/backgroundColor"
             android:orientation="vertical"
             android:padding="10dp">
 
             <com.braintreepayments.cardform.view.CardForm
                 android:id="@+id/cardForm"
                 android:layout_width="match_parent"
+                android:backgroundTint="@color/backgroundColor"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/bt_margin" />
 
             <LinearLayout
                 android:layout_width="match_parent"
+                android:background="@color/backgroundColor"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/default_margin_item_separator"
                 android:layout_marginTop="20dp"

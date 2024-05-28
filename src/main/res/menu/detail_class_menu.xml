@@ -2,8 +2,8 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/feedback"
-        android:title="Send Feedback"
+        android:id="@+id/CreateReoprt"
+        android:title="Create Attendance Report"
         android:contentDescription="more"
         app:showAsAction="never"
         />
@@ -13,12 +13,5 @@
         android:contentDescription="delete"
         app:showAsAction="never"
         />
-    <item
-        android:id="@+id/more"
-        android:title="more"
-        android:contentDescription="more"
-        app:showAsAction="never"
-        >
 
-    </item>
 </menu>

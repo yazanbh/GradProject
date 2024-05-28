@@ -4,11 +4,13 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.applandeo.materialcalendarview.CalendarView;
@@ -30,10 +32,12 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
+import io.paperdb.Paper;
+
 public class Class_detail_std extends AppCompatActivity {
     FirebaseFirestore db;
     ImageView img_btn;
-    TextView cname,PresentCount,AbsentCount,percent;
+    TextView cname,PresentCount,AbsentCount,percent , alert;
     SwipeRefreshLayout swipeLayout;
     double present,absent, exabsent;
     ChipNavigationBar bottomNavigationView;
@@ -44,6 +48,16 @@ public class Class_detail_std extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.student_class_detail);
+
+
+        boolean isDarkMode = Paper.book().read("DarkMode",false);
+        if(isDarkMode){
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+        }
+        else{
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+        }
+
 
         pageData();
         //back button of top|left in page
@@ -112,6 +126,9 @@ public class Class_detail_std extends AppCompatActivity {
         present=0;
         absent=0;
         exabsent=0;
+
+        alert= findViewById(R.id.stdShowAlert);
+        alert.setVisibility(View.GONE);
         //set course name in text view of top page
         cname=findViewById(R.id.CourseName);
         cname.setText(courseName);
@@ -155,18 +172,26 @@ public class Class_detail_std extends AppCompatActivity {
                                 if(isPresent.equals("present")) {
                                     present=present+1;
                                     events.add(new EventDay(mCalendar, R.drawable.present));
-                                    Log.e("successfully","present done"+ present);
+                                  //  Log.e("successfully","present done"+ present);
                                 }//end if
                                 else if (isPresent.equals("absent")){
                                     absent= absent+1;
                                     events.add(new EventDay(mCalendar, R.drawable.absent));
-                                    Log.e("successfully","absent done"+absent);
+                                    if(absent==4){
+                                        alert.setVisibility(View.VISIBLE);
+                                        alert.setText("لقد وصلت الى الحد الأعلى للغيابات المسموح بها لهذا الفصل الدراسي ، يرجى مراجعة مدرس المساق");
+                                    }
+                                    if(absent==5){
+                                        alert.setVisibility(View.VISIBLE);
+                                        alert.setText("سيتم حرمانك من هذا المساق");
+                                    }
+                                    //Log.e("successfully","absent done"+absent);
                                 }//end if else
 
                                 else if (isPresent.equals("exabsent")){
                                     exabsent = exabsent + 1;
                                     events.add(new EventDay(mCalendar, R.drawable.exabsent));
-                                    Log.e("successfully","absent done"+exabsent);
+                                    //Log.e("successfully","absent done"+exabsent);
 
                                 }
 

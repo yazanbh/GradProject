@@ -3,6 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/backgroundColor"
     context=".lecturer_Home_Page">
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -29,9 +30,9 @@
         android:paddingEnd="16dp"
         android:paddingBottom="14sp"
         android:layout_gravity="bottom"
-        android:background="@android:color/white"
+        android:background="@color/backgroundColor"
         app:cnb_menuResource="@menu/lecturer_nav_bar"
-        app:cnb_unselectedColor="@android:color/black"
+        app:cnb_unselectedColor="@color/textColor"
         />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

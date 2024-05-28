@@ -1,5 +1,6 @@
 package com.it.attendance.student;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -12,14 +13,15 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
+import androidx.appcompat.widget.SwitchCompat;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.developer.kalert.KAlertDialog;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.ismaeldivita.chipnavigation.ChipNavigationBar;
 import com.it.attendance.R;
@@ -32,12 +34,19 @@ public class profile_std extends AppCompatActivity {
     private FirebaseAuth auth;
     Context context;
     KAlertDialog pDialogSuccess, pDialogWarining, pDialogProgress;
+    SwitchCompat switchCompat;
+    private SwipeRefreshLayout swipeRefreshLayout;
+    LinearLayout UID;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.std_profile);
         context = getApplicationContext();
+        Paper.init(getApplicationContext());
+
         //initialize FireStore
         db = FirebaseFirestore.getInstance();
         auth = FirebaseAuth.getInstance();
@@ -60,9 +69,37 @@ public class profile_std extends AppCompatActivity {
         }
         );
 
+
+        // dark or light mode
+        switchCompat = findViewById(R.id.SwitchCompatbtn);
+        boolean isDarkMode = Paper.book().read("DarkMode",false);
+        if(isDarkMode){
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+        }
+        else{
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+        }
+        Log.e("Yazan", "Dark mode is :"+ isDarkMode);
+        switchCompat.setChecked(isDarkMode);
+        switchCompat.setOnClickListener(v -> {
+            if(switchCompat.isChecked()){
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+                Paper.book().write("DarkMode", true);
+                Log.e("banihaniYazan","dark mode active");
+            }
+            else {
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+                Paper.book().write("DarkMode", false);
+                Log.e("banihaniYazan","dark mode not active");
+
+            }
+        });
+
+
+
+
         //display user profile info
 
-        Paper.init(getApplicationContext());
         //set user email
         String Email =Paper.book().read("Email");
         TextView eid = findViewById(R.id.email_id);
@@ -99,6 +136,8 @@ public class profile_std extends AppCompatActivity {
                 public void onClick(KAlertDialog kAlertDialog) {
                     Paper.init(getApplicationContext());
                     Paper.book().write("isLoggedIn", "false");
+                    Paper.book().write("DarkMode", false);
+
                     auth.signOut();
                     Intent intent = new Intent(getApplicationContext(), Login_std.class);
                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -122,30 +161,8 @@ public class profile_std extends AppCompatActivity {
         });
 
 
-        //verified the email address
-        LinearLayout verf = findViewById(R.id.verification);
-        verf.setOnClickListener(view -> {
-            pDialogProgress = new KAlertDialog(this, KAlertDialog.PROGRESS_TYPE, false);
-            pDialogProgress.getProgressHelper().setBarColor(Color.parseColor("#A5DC86"));
-            pDialogProgress.setTitleText("Loading");
-            pDialogProgress.setCancelable(false);
-            pDialogProgress.show();
-            checkAndSendVerificationEmail();
-        });//end linearlayout
-
-
-        FirebaseUser firebaseUser = auth.getCurrentUser();
-        if (firebaseUser.isEmailVerified()) {
-            ImageView imageView = findViewById(R.id.checkverf);
-            imageView.setImageResource(R.drawable.checkmark);
-        } else {
-
-            ImageView imageView = findViewById(R.id.checkverf);
-            imageView.setImageResource(0);
-        }
-
         //add university card
-        LinearLayout UID = findViewById(R.id.UnversityID);
+         UID = findViewById(R.id.UnversityID);
         boolean card = Paper.book().read("card");
         if(card){
             UID.setVisibility(View.GONE);
@@ -193,60 +210,55 @@ public class profile_std extends AppCompatActivity {
         });
 
 
+        swipeRefreshLayout = findViewById(R.id.swipe_refresh_layout);
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                // Refresh your data here
+                refreshData();
+            }
+        });
+
+
     }//end onCreate
 
-    private void checkAndSendVerificationEmail() {
-        FirebaseUser user = auth.getCurrentUser();
+    private void refreshData() {
+        // Your data refresh logic here
+        // Once data is refreshed, call swipeRefreshLayout.setRefreshing(false) to stop the refresh animation
+        swipeRefreshLayout.setRefreshing(false);
+        // Get a reference to the document to get if user have UID (card number) or not
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
+        DocumentReference docRef = FirebaseFirestore.getInstance()
+                .collection("students").document(mAuth.getCurrentUser().getEmail());
+        // Get the document
+        docRef.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                DocumentSnapshot document = task.getResult();
+                if (document.exists()) {
+                    Paper.init(getApplicationContext());
+                    // Extract data from the document
 
-        if (user != null) {
-            if (!user.isEmailVerified()) {
-                // User is not verified, send verification email
-                sendVerificationEmail();
-            } else {
-                // User is already verified
-                pDialogProgress.dismissWithAnimation();
-                Toast.makeText(getApplicationContext(), "Email is already verified",
-                        Toast.LENGTH_SHORT).show();
-            }
-        }
-    }
+                    if(document.getString("card")!=null){
+                        Paper.book().write("card",true);
+                        UID.setVisibility(View.GONE);
+                    }
+                    else{
+                        Paper.book().write("card",false);
+                        UID.setVisibility(View.VISIBLE);
+                    }
+                    // Do something with the data
+                    Log.d(ContentValues.TAG, "Document existed");
 
-    private void sendVerificationEmail() {
-        FirebaseUser user = auth.getCurrentUser();
-
-        if (user != null) {
-
-            pDialogSuccess = new KAlertDialog(this, KAlertDialog.SUCCESS_TYPE, false);
-            pDialogSuccess.setTitleText("Successfully");
-            pDialogSuccess.setContentText("Verification email sent to " + user.getEmail().toString());
-            pDialogSuccess.confirmButtonColor(R.color.blue);
-            pDialogSuccess.setConfirmClickListener("Ok", new KAlertDialog.KAlertClickListener() {
-                @Override
-                public void onClick(KAlertDialog kAlertDialog) {
-                    pDialogSuccess.dismissWithAnimation();
+                } else {
+                    Log.d(ContentValues.TAG, "No such document!");
                 }
-            });
+            } else {
+                Log.w(ContentValues.TAG, "Error getting document", task.getException());
+            }
+        });
 
-
-            user.sendEmailVerification()
-                    .addOnCompleteListener(new OnCompleteListener<Void>() {
-                        @Override
-                        public void onComplete(@NonNull Task<Void> task) {
-                            if (task.isSuccessful()) {
-                                pDialogProgress.dismissWithAnimation();
-                                pDialogSuccess.show();
-                            } else {
-                                pDialogProgress.dismissWithAnimation();
-
-                                Log.e("EmailVerification", "sendEmailVerification", task.getException());
-                                Toast.makeText(getApplicationContext(),
-                                        "Failed to send verification email.",
-                                        Toast.LENGTH_SHORT).show();
-                            }
-                        }
-                    });
-        }
     }
+
 
     @Override
     public void onBackPressed() {

@@ -1,7 +1,5 @@
 package com.it.attendance;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -10,13 +8,17 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 
 import com.developer.kalert.KAlertDialog;
 import com.google.firebase.auth.FirebaseAuth;
 import com.it.attendance.lecturer.Login_lecturer;
 import com.it.attendance.student.Login_std;
+
+import io.paperdb.Paper;
 
 public class forgot_password extends AppCompatActivity {
     EditText Email;
@@ -28,6 +30,14 @@ public class forgot_password extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.reset_password);
+
+        boolean isDarkMode = Paper.book().read("DarkMode",false);
+        if(isDarkMode){
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+        }
+        else{
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+        }
 
         mAuth = FirebaseAuth.getInstance();
         Email=findViewById(R.id.email_account);

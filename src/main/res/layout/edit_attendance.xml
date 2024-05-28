@@ -39,7 +39,7 @@
                     android:id="@+id/present"
                     android:fontFamily="@font/nunito"
                     android:textSize="18sp"
-                    android:textColor="@color/black"
+                    android:textColor="@color/textColor"
                     android:textStyle="bold"/>
 
                 <RadioButton
@@ -49,7 +49,7 @@
                     android:id="@+id/absent"
                     android:fontFamily="@font/nunito"
                     android:textSize="18sp"
-                    android:textColor="@color/black"
+                    android:textColor="@color/textColor"
                     android:textStyle="bold"/>
 
                 <RadioButton
@@ -59,7 +59,7 @@
                     android:id="@+id/exabsent"
                     android:fontFamily="@font/nunito"
                     android:textSize="18sp"
-                    android:textColor="@color/black"
+                    android:textColor="@color/textColor"
                     android:textStyle="bold"/>
             </RadioGroup>
 

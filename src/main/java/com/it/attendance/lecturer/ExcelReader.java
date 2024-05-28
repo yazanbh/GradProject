@@ -147,7 +147,7 @@ public class ExcelReader {
 
 
                 });//end docRef
-                String formattedDate = "test";
+               /* String formattedDate = "test";
 
                 //document reference for attendance
                 DocumentReference docReff = db.collection("attendance").document(courseNumber).collection(Email).document(formattedDate);
@@ -159,7 +159,7 @@ public class ExcelReader {
                         .addOnSuccessListener(aVoid -> Log.d("TAG", "attendance document created successfully "+Email))
                         .addOnFailureListener(e -> Log.w("TAG", "Error creating attendance document "+Email, e));
                 //end docReff
-
+*/
             }//end for loop
 
             workbook.close();

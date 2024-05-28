@@ -2,23 +2,14 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-     android:gravity="center">
+     android:gravity="center"
+    android:background="@color/backgroundColor"
+    >
 
     <ImageView
         android:id="@+id/app_logo"
         android:layout_width="match_parent"
-        android:layout_height="250sp"
-        android:src="@mipmap/ic_launcher_round" />
-
-    <TextView
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_below="@id/app_logo"
-    android:text="AABU Attendance"
-    android:textSize="30sp"
-        android:textColor="@color/home"
-        android:fontFamily="@font/proximanovaregular"
-        android:gravity="center"
-     />
+        android:layout_height="308dp"
+        android:src="@mipmap/ic_launcher_foreground" />
 
 </RelativeLayout>

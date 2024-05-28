@@ -1,7 +1,5 @@
 package com.it.attendance.student;
 
-import static android.provider.Settings.Secure;
-
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -10,32 +8,45 @@ import android.util.Log;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 
 import com.developer.kalert.KAlertDialog;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.it.attendance.PasswordValidator;
 import com.it.attendance.R;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import io.paperdb.Paper;
 
 public class Signup_std extends AppCompatActivity {
     Button signup;
     EditText Name,Email,pass1,pass2;
     private FirebaseAuth mAuth;
     KAlertDialog pDialog;
+    TextView req;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.signup_std);
-        //get device id to restrict users opens another account
-        String deviceId = Secure.getString(getContentResolver(), Secure.ANDROID_ID);
+
+        boolean isDarkMode = Paper.book().read("DarkMode",false);
+        if(isDarkMode){
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+        }
+        else{
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+        }
+
 
         // Initialize Firebase Auth
         mAuth = FirebaseAuth.getInstance();
@@ -93,6 +104,23 @@ public class Signup_std extends AppCompatActivity {
 
 
         });//end setOnClickListener
+
+        req= findViewById(R.id.reqiurements);
+        req.setOnClickListener(v -> {
+            pDialog = new KAlertDialog(this, KAlertDialog.NORMAL_TYPE,false);
+            pDialog.getProgressHelper().setBarColor(Color.parseColor("#A5DC86"));
+            pDialog.setTitleText("Password Requirements");
+            pDialog.confirmButtonColor(R.color.blue);
+            pDialog.setContentText("Password must be at least 8 characters long and include capital letters and punctuation (e.g., #, _, &).");
+            pDialog.setCancelable(true);
+            pDialog.setConfirmClickListener("OK", kAlertDialog -> {pDialog.dismissWithAnimation();
+            });
+            pDialog.show();
+        });
+
+
+
+
     }//end onCreate
     public boolean validate(){
         boolean t=true;
@@ -110,20 +138,20 @@ public class Signup_std extends AppCompatActivity {
             Email.requestFocus();
             t=false;
         }
-        if(pass.isEmpty() || pass.length()<7){
-            pass1.setError("password must be 7 character at least");
+        if(!PasswordValidator.isValidPassword(pass)){
+            pass1.setError("Password is weak! Please use a stronger password.");
             pass1.requestFocus();
             t=false;
         }
-        if(confirmpass.isEmpty() || !confirmpass.equals(pass)){
+        if(!confirmpass.equals(pass)){
             pass2.setError("password not match!");
             pass2.requestFocus();
             t=false;
         }
-        if(pass.isEmpty()&&confirmpass.isEmpty()){
-            pass1.setError("password must be 7 character at least");
+        if(pass.isEmpty() && confirmpass.isEmpty()){
+            pass1.setError("password cannot be empty");
+            pass2.setError("password cannot be empty");
             pass1.requestFocus();
-            pass2.setError("password must be 7 character at least");
             pass2.requestFocus();
             t=false;
         }

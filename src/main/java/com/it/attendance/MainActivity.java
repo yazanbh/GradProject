@@ -9,23 +9,36 @@ import android.os.Handler;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.cardview.widget.CardView;
 
 import com.developer.kalert.KAlertDialog;
 import com.it.attendance.lecturer.Login_lecturer;
 import com.it.attendance.student.Login_std;
 
+import io.paperdb.Paper;
+
 public class MainActivity extends AppCompatActivity {
     private boolean doubleBackToExitPressedOnce = false;
     CardView teacher,std;
 
-    KAlertDialog pDialog;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.choose_your_role);
+
+
+        boolean isDarkMode = Paper.book().read("DarkMode",false);
+        if(isDarkMode){
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+        }
+        else{
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+        }
+
+        
         // Check internet connection initially
         if (!isNetworkAvailable()) {
             showNoInternetDialog();

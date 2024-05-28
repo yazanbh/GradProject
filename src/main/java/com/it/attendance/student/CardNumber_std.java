@@ -13,6 +13,7 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 
 import com.braintreepayments.cardform.OnCardFormSubmitListener;
 import com.braintreepayments.cardform.view.CardEditText;
@@ -69,6 +70,15 @@ public class CardNumber_std extends AppCompatActivity implements CardNfcAsyncTas
         super.onCreate(savedInstanceState);
         setContentView(R.layout.std_card_number);
 
+        boolean isDarkMode = Paper.book().read("DarkMode",false);
+        if(isDarkMode){
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+        }
+        else{
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+        }
+
+
         db = FirebaseFirestore.getInstance();
 
 
@@ -113,6 +123,9 @@ public class CardNumber_std extends AppCompatActivity implements CardNfcAsyncTas
         });
         Button cancel = findViewById(R.id.btnCancel);
         cancel.setOnClickListener(view->{
+            Intent intent = new Intent(getApplicationContext(), profile_std.class);
+            startActivity(intent);
+            overridePendingTransition(0, 0);
             finish();
         });
     }//end onCreate
@@ -236,12 +249,7 @@ public class CardNumber_std extends AppCompatActivity implements CardNfcAsyncTas
 
     @Override
     public void cardIsReadyToRead() {
-        try {
-            card = CardEncrypt.encrypt(mCardNfcAsyncTask.getCardNumber());
-        } catch (NoSuchPaddingException | NoSuchAlgorithmException | InvalidKeyException |
-                 IllegalBlockSizeException | BadPaddingException e) {
-            throw new RuntimeException(e);
-        }
+
         // set card number to Card Number field
         mCardNumber.setText(mCardNfcAsyncTask.getCardNumber());
     }

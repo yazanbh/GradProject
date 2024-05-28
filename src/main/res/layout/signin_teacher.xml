@@ -7,7 +7,8 @@
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:background="@color/backgroundColor">
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -22,7 +23,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Sign in as Teacher"
+                android:text="Sign in as Lecturer"
                 android:textAlignment="center"
                 android:layout_marginTop="30dp"
                 android:textSize="25dp"
@@ -42,9 +43,11 @@
                 android:layout_marginLeft="40dp"
                 android:layout_marginRight="40dp"
                 android:layout_marginTop="50dp"
-                app:hintTextColor="#000000"
-                app:cursorColor="#000"
-                app:boxStrokeColor="#000">
+                app:hintTextColor="@color/textColor"
+                app:cursorColor="@color/textColor"
+                android:textColorHint="@color/textColor"
+
+                app:boxStrokeColor="@color/textColor">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:textDirection="ltr"
@@ -52,7 +55,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="textEmailAddress"
-                    android:background="@color/white"
+                    android:background="@color/backgroundColor"
+                    android:textColor="@color/textColor"
                     android:ems="15"/>
 
             </com.google.android.material.textfield.TextInputLayout>
@@ -62,6 +66,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="password"
+
                 app:startIconDrawable="@drawable/lock_24"
                 android:background="@color/white"
                 app:passwordToggleEnabled="true"
@@ -69,9 +74,10 @@
                 android:layout_marginBottom="36dp"
                 android:layout_marginLeft="40dp"
                 android:layout_marginRight="40dp"
-                app:hintTextColor="#000000"
-                app:cursorColor="#000"
-                app:boxStrokeColor="#293859">
+                app:hintTextColor="@color/textColor"
+                android:textColorHint="@color/textColor"
+                app:cursorColor="@color/textColor"
+                app:boxStrokeColor="@color/textColor">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:textDirection="ltr"
@@ -79,7 +85,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="textPassword"
-                    android:background="@color/white"
+                    android:background="@color/backgroundColor"
+                    android:textColor="@color/textColor"
+
                     android:ems="15"
                     />
 
@@ -111,7 +119,7 @@
                     android:textSize="15dp"
                     android:fontFamily="@font/nunito"
                     android:textStyle="bold"
-                    android:textColor="#000"
+                    android:textColor="@color/textColor"
                     android:textDirection="ltr"
                     />
                 <TextView

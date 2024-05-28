@@ -4,13 +4,15 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".lecturer.Signup_Lecturer">
+    tools:context=".lecturer.Signup_Lecturer"
+    android:background="@color/backgroundColor">
     <!-- Nested Scroll view -->
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="30sp">
+        android:layout_marginTop="30sp"
+        >
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -42,20 +44,22 @@
                 android:layout_height="wrap_content"
                 android:hint="Name"
                 app:startIconDrawable="@drawable/user"
-                android:background="@color/white"
+                android:background="@color/backgroundColor"
                 android:layout_marginLeft="40dp"
                 android:layout_marginRight="40dp"
                 android:layout_marginTop="20dp"
-                app:hintTextColor="#000000"
-                app:cursorColor="#000"
-                app:boxStrokeColor="#000">
+                app:hintTextColor="@color/textColor"
+                android:textColorHint="@color/textColor"
+                app:cursorColor="@color/textColor"
+                app:boxStrokeColor="@color/textColor">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/signup_lec_name"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="text"
-                    android:background="@color/white"
+                    android:background="@color/backgroundColor"
+                    android:textColor="@color/textColor"
                     android:ems="15"/>
 
             </com.google.android.material.textfield.TextInputLayout>
@@ -64,20 +68,23 @@
                 android:layout_height="wrap_content"
                 android:hint="E-mail"
                 app:startIconDrawable="@drawable/email_24"
-                android:background="@color/white"
+                android:background="@color/backgroundColor"
                 android:layout_marginLeft="40dp"
                 android:layout_marginRight="40dp"
                 android:layout_marginTop="20dp"
-                app:hintTextColor="#000000"
-                app:cursorColor="#000"
-                app:boxStrokeColor="#000">
+                app:hintTextColor="@color/textColor"
+                app:cursorColor="@color/textColor"
+                android:textColorHint="@color/textColor"
+
+                app:boxStrokeColor="@color/textColor">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/signup_lec_email"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="textEmailAddress"
-                    android:background="@color/white"
+                    android:background="@color/backgroundColor"
+                    android:textColor="@color/textColor"
                     android:ems="15"/>
 
             </com.google.android.material.textfield.TextInputLayout>
@@ -86,22 +93,24 @@
                 android:layout_height="wrap_content"
                 android:hint="Password"
                 app:startIconDrawable="@drawable/lock_24"
-                android:background="@color/white"
+                android:background="@color/backgroundColor"
                 android:layout_marginLeft="40dp"
                 android:layout_marginRight="40dp"
                 android:layout_marginTop="20dp"
-                app:hintTextColor="#000000"
-                app:cursorColor="#000"
-                app:boxStrokeColor="#000"
+                app:hintTextColor="@color/textColor"
+                app:cursorColor="@color/textColor"
+                app:boxStrokeColor="@color/textColor"
                 app:passwordToggleEnabled="true"
-                app:passwordToggleTint="#6A6966">
+                android:textColorHint="@color/textColor"
+                app:passwordToggleTint="@color/passwordToggleTint">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/signup_lec_pass1"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="textPassword"
-                    android:background="@color/white"
+                    android:background="@color/backgroundColor"
+                    android:textColor="@color/textColor"
                     android:ems="15"/>
 
             </com.google.android.material.textfield.TextInputLayout>
@@ -110,26 +119,29 @@
                 android:layout_height="wrap_content"
                 android:hint="Confirm Password"
                 app:startIconDrawable="@drawable/lock_24"
-                android:background="@color/white"
+                android:background="@color/backgroundColor"
                 android:layout_marginLeft="40dp"
                 android:layout_marginRight="40dp"
                 android:layout_marginTop="20dp"
                 android:layout_marginBottom="20sp"
-                app:hintTextColor="#000000"
-                app:cursorColor="#000"
-                app:boxStrokeColor="#000"
+                app:hintTextColor="@color/textColor"
+                app:cursorColor="@color/textColor"
+                app:boxStrokeColor="@color/textColor"
                 app:passwordToggleEnabled="true"
-                app:passwordToggleTint="#6A6966">
+                android:textColorHint="@color/textColor"
+                app:passwordToggleTint="@color/passwordToggleTint">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/signup_lec_pass2"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="textPassword"
-                    android:background="@color/white"
+                    android:background="@color/backgroundColor"
+                    android:textColor="@color/textColor"
                     android:ems="15"/>
 
             </com.google.android.material.textfield.TextInputLayout>
+
             <Button
                 android:id="@+id/signup_lec_btn"
                 android:layout_width="match_parent"
@@ -141,6 +153,20 @@
                 android:backgroundTint="#293859"
                 android:layout_marginRight="80dp"
                 android:layout_marginLeft="80dp"
+                />
+
+            <TextView
+                android:id="@+id/reqiurements"
+                android:layout_marginTop="20sp"
+                android:layout_gravity="bottom"
+                android:layout_marginLeft="40dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Show password requirements."
+
+                android:paddingBottom="10dp"
+                android:textColor="@color/textColor"
+                android:textSize="15sp"
                 />
         </LinearLayout>
     </ScrollView>

@@ -23,14 +23,14 @@
             android:text="يزن محمود فهد بني هاني"
             android:layout_marginLeft="10dp"
             android:textSize="14sp"
-            android:textColor="#B5000000"
+            android:textColor="@color/textColor"
             android:gravity="left"            />
         <TextView
             android:id="@+id/student_regNo_detail_adapter"
             android:textSize="14sp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textColor="#B5000000"
+            android:textColor="@color/textColor"
             android:layout_marginLeft="10dp"
             android:text="2000901023"
             android:gravity="left"
@@ -52,7 +52,7 @@
         android:layout_height="wrap_content"
         android:textSize="20sp"
         android:text="0"
-        android:textColor="#000000"
+        android:textColor="@color/textColor"
         android:textStyle="bold"
         android:fontFamily="@font/nunito"
         android:layout_marginRight="5dp"/>
@@ -78,7 +78,7 @@
             android:layout_height="wrap_content"
             android:textSize="20sp"
             android:text="0"
-            android:textColor="#000000"
+            android:textColor="@color/textColor"
             android:textStyle="bold"
             android:fontFamily="@font/nunito"
             android:layout_marginRight="5dp"/>
@@ -102,7 +102,7 @@
         android:layout_height="wrap_content"
         android:textSize="20sp"
         android:text="0"
-        android:textColor="#000000"
+        android:textColor="@color/textColor"
         android:textStyle="bold"
         android:fontFamily="@font/nunito"
         android:layout_marginRight="5dp"/>

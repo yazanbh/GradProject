@@ -9,6 +9,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -32,15 +33,28 @@ public class SplashScreen extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.splash_screen);
-        mAuth = FirebaseAuth.getInstance();
+
         Paper.init(getApplicationContext());
+
+        boolean isDarkMode = Paper.book().read("DarkMode",false);
+        if(isDarkMode){
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+        }
+        else{
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+        }
+
+
+
+        mAuth = FirebaseAuth.getInstance();
+
 
         String email= Paper.book().read("Email","cc");
         String password =Paper.book().read("Password");
         String isLoggedIn = Paper.book().read("isLoggedIn");
         String type= Paper.book().read("type","");
 
-        Log.e("Paper","email: "+ email +"\n password "+ password +"\n isLogin? "+ isLoggedIn +"\n type :"+type);
+        Log.e("Paper","email: "+ email +"\n password "+ password +"\n isLogin? "+ isLoggedIn +"\n type :"+type+"\n DarkMode :"+isDarkMode);
 
         // Simulate a short delay (optional)
         new Handler().postDelayed(() -> {
@@ -75,7 +89,7 @@ public class SplashScreen extends AppCompatActivity {
                                     if (task.isSuccessful()) {
                                         // Get a reference to the document
                                         Paper.init(getApplicationContext());
-                                        Paper.book().destroy();
+                                       // Paper.book().destroy();
                                         Paper.book().write("Email", email);
                                         Paper.book().write("Password", password);
                                         Paper.book().write("isLoggedIn", "true");

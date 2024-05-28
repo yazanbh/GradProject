@@ -18,12 +18,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         >
-        <ImageView
-            android:id="@+id/imageClass_adapter"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:src="@drawable/button_back_white"
-            android:scaleType="centerCrop"/>
 
         <RelativeLayout
             android:id="@+id/frame_bg"

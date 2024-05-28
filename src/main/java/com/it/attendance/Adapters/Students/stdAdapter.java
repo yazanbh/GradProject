@@ -9,7 +9,6 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.it.attendance.Adapters.CoursesHomePageLecturer.course;
 import com.it.attendance.R;
 
 import java.util.ArrayList;
@@ -36,9 +35,11 @@ public class stdAdapter extends RecyclerView.Adapter<stdAdapter.MyViewHolder> {
     @Override
     public void onBindViewHolder(@NonNull stdAdapter.MyViewHolder holder, int position) {
         Course course = coursesArraylist.get(position);
+
         holder.CourseName.setText(course.getCname());
         holder.CourseID.setText(course.getcNumber());
         holder.CourseSection.setText("section "+course.getcSection());
+
     }
 
     @Override
@@ -56,14 +57,12 @@ public class stdAdapter extends RecyclerView.Adapter<stdAdapter.MyViewHolder> {
             CourseName= itemView.findViewById(R.id.CourseName_adapter);
             CourseID= itemView.findViewById(R.id.CourseID_adapter);
             CourseSection= itemView.findViewById(R.id.CourseSec_adapter);
-            itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if(homePage_std_interFace != null){
-                        int pos=getAdapterPosition();
-                        if(pos != RecyclerView.NO_POSITION){
-                            homePage_std_interFace.onItemClick(pos);
-                        }
+
+            itemView.setOnClickListener(v -> {
+                if(homePage_std_interFace != null){
+                    int pos=getAdapterPosition();
+                    if(pos != RecyclerView.NO_POSITION){
+                        homePage_std_interFace.onItemClick(pos);
                     }
                 }
             });

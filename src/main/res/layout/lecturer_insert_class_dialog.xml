@@ -26,6 +26,7 @@
             android:paddingLeft="12dp"
             android:paddingTop="12dp"
             android:paddingRight="12dp"
+            android:background="@color/backgroundColor"
             android:paddingBottom="12dp">
 
             <TextView
@@ -45,8 +46,9 @@
 
             <EditText
                 android:id="@+id/CourseName"
-                app:hintTextColor="#000000"
-                app:cursorColor="#000"
+                app:hintTextColor="@color/textColor"
+                app:cursorColor="@color/textColor"
+                android:textColor="@color/textColor"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/create"
@@ -72,8 +74,9 @@
                 android:background="@drawable/edittext_back"
                 android:focusedByDefault="true"
                 android:hint="Course ID"
-                app:hintTextColor="#000000"
-                app:cursorColor="#000"
+                app:hintTextColor="@color/textColor"
+                app:cursorColor="@color/textColor"
+                android:textColor="@color/textColor"
                 android:padding="16dp" />
 
             <EditText
@@ -87,8 +90,9 @@
                 android:focusedByDefault="true"
                 android:hint="Section"
                 android:inputType="numberDecimal"
-                app:hintTextColor="#000000"
-                app:cursorColor="#000"
+                app:hintTextColor="@color/textColor"
+                app:cursorColor="@color/textColor"
+                android:textColor="@color/textColor"
 
                 android:padding="16dp" />
 

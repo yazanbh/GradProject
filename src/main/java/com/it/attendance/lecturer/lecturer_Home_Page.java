@@ -20,6 +20,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
@@ -64,16 +65,27 @@ public class lecturer_Home_Page extends AppCompatActivity implements RecyclerVie
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.lecturer_home_page);
+    Paper.init(getApplicationContext());
+        boolean isDarkMode = Paper.book().read("DarkMode",false);
+        if(isDarkMode){
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+        }
+        else{
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+        }
+
+
         //initilaize firestore
         db = FirebaseFirestore.getInstance();
-        //initialize bottom navbar
-        //initialize bottom navbar
+        //initialize bottom nav bar
         bottomNavigationView = findViewById(R.id.BottomNavigationView);
         bottomNavigationView.setItemSelected(R.id.home,true);
         new Handler().postDelayed(() -> bottomNavigationView.setItemSelected(R.id.home,false), 3000);
         //go to another page from navbar
         bottomNavigationView.setOnItemSelectedListener(i -> {
             if(i==R.id.profile){
+                finishAffinity();
+                finish();
                 startActivity(new Intent(getApplicationContext(), profile.class));
                 overridePendingTransition(0,0);
             }

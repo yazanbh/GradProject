@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:background="@color/backgroundColor"
     tools:context=".student.profile_std">
 
     <LinearLayout
@@ -48,6 +49,7 @@
         android:gravity="center"
         android:orientation="vertical"
         android:padding="16dp"
+
         android:layout_marginTop="50dp">
 
         <androidx.cardview.widget.CardView
@@ -73,7 +75,7 @@
                 android:textAlignment="center"
                 android:layout_marginTop="10dp"
                 android:fontFamily="@font/nunito"
-                android:textColor="#293859"
+                android:textColor="@color/textColorPofile"
                 android:textSize="21sp"
                 android:gravity="center"
                 android:textStyle="bold" />
@@ -87,7 +89,8 @@
                 android:textAlignment="center"
                 android:textSize="14sp"
                 android:gravity="center"
-                android:textColor="#293859"/>
+                android:textColor="@color/textColorPofile"
+                />
 
 
         </LinearLayout>
@@ -135,6 +138,8 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="10dp"
+                            android:background="@color/backgroundColor"
+
                             android:orientation="vertical">
 
                             <LinearLayout
@@ -161,27 +166,22 @@
                                         android:layout_width="0dp"
                                         android:layout_height="wrap_content"
                                         android:layout_marginLeft="20dp"
-                                        android:layout_weight="6"
+                                        android:layout_weight="7"
                                         android:fontFamily="@font/nunito"
-                                        android:text="Verification"
+                                        android:text="Dark mode"
                                         android:textColor="@color/gray"
                                         android:textDirection="ltr"
                                         android:textSize="18sp" />
-
-                                    <ImageView
-                                        android:id="@+id/checkverf"
-                                        android:layout_width="0dp"
-                                        android:layout_height="match_parent"
+                                    <androidx.appcompat.widget.SwitchCompat
+                                        android:id="@+id/SwitchCompatbtn"
                                         android:layout_weight="1"
-                                        android:padding="5dp"
-                                        android:src="@drawable/checkmark" />
-
-                                    <ImageView
-                                        android:layout_width="0dp"
-                                        android:layout_height="match_parent"
-                                        android:layout_gravity="center_vertical"
-                                        android:layout_weight="1"
-                                        android:src="@drawable/forward" />
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:background="@null"
+                                        android:focusable="false"
+                                        android:thumbTint="@color/switch_thumb_selector"
+                                        android:trackTint="@color/switch_track_selector"
+                                        />
                                 </LinearLayout>
                             </LinearLayout>
 
@@ -247,6 +247,7 @@
                                         android:layout_height="wrap_content"
                                         android:fontFamily="@font/nunito"
                                         android:text="contact"
+                                        android:textColor="@color/gray"
                                         android:textDirection="ltr"
                                         android:textSize="19sp"
                                         android:textStyle="bold" />
@@ -262,6 +263,7 @@
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:layout_marginTop="10dp"
+                                    android:background="@color/backgroundColor"
                                     android:orientation="vertical">
 
                                     <LinearLayout
@@ -340,10 +342,9 @@
         android:paddingEnd="16dp"
         android:paddingBottom="14sp"
         android:layout_gravity="bottom"
-        android:background="@android:color/white"
-        android:elevation="8dp"
+        android:background="@color/backgroundColor"
         app:cnb_menuResource="@menu/lecturer_nav_bar"
-        app:cnb_unselectedColor="@android:color/black"
+        app:cnb_unselectedColor="@color/textColor"
 
         />
 

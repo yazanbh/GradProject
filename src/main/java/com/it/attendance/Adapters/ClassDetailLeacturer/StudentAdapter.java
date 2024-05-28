@@ -11,14 +11,11 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
-import com.google.firebase.firestore.QuerySnapshot;
 import com.it.attendance.R;
 
 import java.util.ArrayList;
@@ -70,37 +67,34 @@ Log.e("yazaaaaaaaaaaan",cNumber);
 
         Query query = collectionRef.whereIn("IsPresent",presentList);
         query.get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                .addOnCompleteListener(task -> {
 
-                        if (task.isSuccessful()) {
-                            int present=0;
-                            int absent=0;
-                            int exabsent=0;
+                    if (task.isSuccessful()) {
+                        int present=0;
+                        int absent=0;
+                        int exabsent=0;
 
-                            for (DocumentSnapshot document : task.getResult()) {
-                                String isPresent = document.getString("IsPresent");
-                                Log.e("successfully", "Adapter done");
+                        for (DocumentSnapshot document : task.getResult()) {
+                            String isPresent = document.getString("IsPresent");
+                            Log.e("successfully", "Adapter done");
 
-                                if (isPresent.equals("present")) {
-                                    present = present + 1;
-                                    Log.e("successfully", "present done" + String.valueOf(present));
-                                }//end if
-                                else if (isPresent.equals("absent")){
-                                    absent = absent + 1;
-                                    Log.e("successfully", "absent done" + String.valueOf(absent));
-                                }//end else
-                                else {
-                                    holder.linearLayout.setVisibility(View.VISIBLE);
-                                    exabsent = exabsent +1;
-                                }
-                            }//end for loop
+                            if (isPresent.equals("present")) {
+                                present = present + 1;
+                                Log.e("successfully", "present done" + String.valueOf(present));
+                            }//end if
+                            else if (isPresent.equals("absent")){
+                                absent = absent + 1;
+                                Log.e("successfully", "absent done" + String.valueOf(absent));
+                            }//end else
+                            else {
+                                holder.linearLayout.setVisibility(View.VISIBLE);
+                                exabsent = exabsent +1;
+                            }
+                        }//end for loop
 
-                            holder.Present.setText(String.valueOf(present));
-                            holder.Absent.setText(String.valueOf(absent));
-                            holder.ExAbsent.setText(String.valueOf(exabsent));
-                        }
+                        holder.Present.setText(String.valueOf(present));
+                        holder.Absent.setText(String.valueOf(absent));
+                        holder.ExAbsent.setText(String.valueOf(exabsent));
                     }
                 }).addOnFailureListener(new OnFailureListener() {
                     @Override

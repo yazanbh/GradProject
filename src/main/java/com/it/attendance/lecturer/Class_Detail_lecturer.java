@@ -13,6 +13,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.nfc.NfcAdapter;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
@@ -23,6 +24,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.widget.Toolbar;
 import androidx.constraintlayout.helper.widget.MotionEffect;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -31,7 +33,6 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.developer.kalert.KAlertDialog;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
@@ -41,6 +42,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.ismaeldivita.chipnavigation.ChipNavigationBar;
 import com.it.attendance.Adapters.ClassDetailLeacturer.AttendanceViewInterface;
@@ -98,11 +100,21 @@ public class Class_Detail_lecturer extends AppCompatActivity implements CardNfcA
     private boolean mIsScanNow,isNfcDialogShown = false;
     int counter=1;
 
-
+    private FirestoreHelper firestoreHelper = new FirestoreHelper();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.class_detail);
+
+        boolean isDarkMode = Paper.book().read("DarkMode",false);
+        if(isDarkMode){
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+        }
+        else{
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+        }
+
+
         //initilaize firestore
         db = FirebaseFirestore.getInstance();
         //get the course data from Lecturer_Home_Page
@@ -116,8 +128,7 @@ public class Class_Detail_lecturer extends AppCompatActivity implements CardNfcA
         //set course name
         className = findViewById(R.id.classname_detail);
         className.setText(CourseName);
-
-
+        
         //tool bar
         bar = findViewById(R.id.toolbar_class_detail);
         bar.setOnMenuItemClickListener(item -> {
@@ -125,6 +136,21 @@ public class Class_Detail_lecturer extends AppCompatActivity implements CardNfcA
             if (item.getItemId() == R.id.delete) {
                 delete(CourseNumber);
                 return true;
+            }
+
+            if(item.getItemId()== R.id.CreateReoprt){
+                Log.e("CreateReoprt" , "Excel CreateReoprt for course ");
+
+                String courseNumber = getIntent().getStringExtra("number");
+                String filePath = getExternalFilesDir(null) +"AttendanceReport_"+ CourseNumber+".xlsx";
+
+                firestoreHelper.getAttendanceData(courseNumber,list, attendanceMap -> {
+                    ExcelExporter.exportToExcel(attendanceMap, filePath, Class_Detail_lecturer.this);
+                    Log.w("ExcelExporter" , "Excel file saved to " + filePath);
+
+                   // Toast.makeText(this, "Excel file saved to " + filePath, Toast.LENGTH_LONG).show();
+                });
+
             }
 
             return true;
@@ -137,6 +163,8 @@ public class Class_Detail_lecturer extends AppCompatActivity implements CardNfcA
                         onBackPressed();
                     }
                     else if (i == R.id.profile) {
+                        finishAffinity();
+                        finish();
                         startActivity(new Intent(getApplicationContext(), profile.class));
                         overridePendingTransition(0, 0);
                     }
@@ -187,16 +215,18 @@ public class Class_Detail_lecturer extends AppCompatActivity implements CardNfcA
             //getDate();
             if(counter%2 != 0){
                 counter++;
-                take_attendance.setText("Stop take attendance");
+                take_attendance.setText("Stop attendance");
                 recyclerView.setAdapter(takeAttendanceAdapter);
                 takeAttendanceAdapter.notifyDataSetChanged();
+                stdAdapter.notifyDataSetChanged();
+
             }
             else if(counter%2==0){
-                take_attendance.setText("Start take attendance");
+                take_attendance.setText("Start attendance");
                 counter++;
                 recyclerView.setAdapter(stdAdapter);
-                stdAdapter.notifyDataSetChanged();
-            }
+                takeAttendanceAdapter.notifyDataSetChanged();
+                stdAdapter.notifyDataSetChanged();            }
         });
 
 
@@ -288,26 +318,42 @@ public class Class_Detail_lecturer extends AppCompatActivity implements CardNfcA
     private void delete(String CourseNumber) {
         db.collection("course").document(CourseNumber)
                 .delete()
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        Log.d(TAG, "DocumentSnapshot successfully deleted!");
-                        Toast.makeText(Class_Detail_lecturer.this, "Successfully Delete Course", Toast.LENGTH_SHORT).show();
-                        startActivity(new Intent(getApplicationContext(), lecturer_Home_Page.class));
-                        overridePendingTransition(0, 0);
-                        finish();
+                .addOnSuccessListener(aVoid -> {
+                    Log.d(TAG, "DocumentSnapshot successfully deleted!");
+                    deleteStudentAttendance(CourseNumber);
+                })
+                .addOnFailureListener(e -> Log.e(TAG, "Error deleting document", e));
+    }
+//end delete function
+private void deleteStudentAttendance(String courseNumber) {
+    for (String studentEmail : list) {
+        db.collection("attendance").document(courseNumber).collection(studentEmail)
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
+                        document.getReference().delete().addOnCompleteListener(task -> {
+                            if (task.isSuccessful()) {
+                                Log.d(TAG, "Student attendance document deleted for: " + studentEmail);
+                            } else {
+                                Log.w(TAG, "Error deleting student attendance document", task.getException());
+                            }
+                        });
                     }
                 })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.e(TAG, "Error deleting document", e);
-                        Toast.makeText(Class_Detail_lecturer.this, "Cannot Delete Course", Toast.LENGTH_SHORT).show();
+                .addOnFailureListener(e -> Log.e(TAG, "Error getting student attendance documents", e));
+    }
 
-                    }
-                });
+    db.collection("attendance").document(courseNumber).delete()
+            .addOnSuccessListener(unused -> {
+                Toast.makeText(Class_Detail_lecturer.this, "Successfully Delete Course", Toast.LENGTH_SHORT).show();
+                startActivity(new Intent(getApplicationContext(), lecturer_Home_Page.class));
+                overridePendingTransition(0, 0);
+                finish();
+                Log.d(TAG, "Attendance delete for course: " + courseNumber);
+            });
+}
 
-    }//end delete function
+
 
     private void OpenDialog() {
         Dialog dialog = new Dialog(this, android.R.style.Theme_Dialog);
@@ -351,6 +397,7 @@ public class Class_Detail_lecturer extends AppCompatActivity implements CardNfcA
     }//end opendialog function
 
 
+    @SuppressLint("NotifyDataSetChanged")
     private void AddStudentToCourse(String stdEmail, String stdName){
         //check if the student have account in the app or not
         DocumentReference docRef = db.collection("students")
@@ -359,26 +406,19 @@ public class Class_Detail_lecturer extends AppCompatActivity implements CardNfcA
             if (documentSnapshot.exists()) {
                 // student have an account exists & add student to the course in enrollStudents filed in firebase
                 String CourseNumber = getIntent().getStringExtra("number");
+                assert CourseNumber != null;
                 DocumentReference docRef1 = db.collection("course").document(CourseNumber);
                 Map<String, Object> updateData = new HashMap<>();
                 updateData.put("enrollStudents",  FieldValue.arrayUnion(stdEmail));
                 docRef1.update(updateData)
-                        .addOnSuccessListener(new OnSuccessListener<Void>() {
-                            @Override
-                            public void onSuccess(Void aVoid) {
-                                stdArrayList.clear();
-                                getEnrollStudents();
-                                stdAdapter.notifyDataSetChanged();
-                                takeAttendanceAdapter.notifyDataSetChanged();
-                                Toast.makeText(Class_Detail_lecturer.this, "Student added successfully to the course!", Toast.LENGTH_SHORT).show();
-                            }
+                        .addOnSuccessListener(aVoid -> {
+                            stdArrayList.clear();
+                            getEnrollStudents();
+                            stdAdapter.notifyDataSetChanged();
+                            takeAttendanceAdapter.notifyDataSetChanged();
+                            Toast.makeText(Class_Detail_lecturer.this, "Student added successfully to the course!", Toast.LENGTH_SHORT).show();
                         })
-                        .addOnFailureListener(new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull Exception e) {
-                                Log.e("TAG", "Error adding student email", e);
-                            }
-                        });
+                        .addOnFailureListener(e -> Log.e("TAG", "Error adding student email", e));
 
 
             } else {
@@ -413,6 +453,7 @@ public class Class_Detail_lecturer extends AppCompatActivity implements CardNfcA
                 });
 
             }
+            /*
             DocumentReference docReff = db.collection("attendance").document(CourseNumber).collection(stdEmail).document("test");
             // Create a Map to store the document's data (replace with your actual data)
             Map<String, Object> data = new HashMap<>();
@@ -422,7 +463,7 @@ public class Class_Detail_lecturer extends AppCompatActivity implements CardNfcA
                     .addOnSuccessListener(aVoid -> Log.d("TAG", "attendance document created successfully "+stdEmail))
                     .addOnFailureListener(e -> Log.w("TAG", "Error creating attendance document "+stdEmail, e));
             //end docReff
-
+*/
         });
     }//end function
 
@@ -490,7 +531,8 @@ public class Class_Detail_lecturer extends AppCompatActivity implements CardNfcA
     protected void onResume() {
         super.onResume();
         mIntentFromCreate = false;
-
+        takeAttendanceAdapter.notifyDataSetChanged();
+        stdAdapter.notifyDataSetChanged();
         if (!isNfcDialogShown && mNfcAdapter != null && !mNfcAdapter.isEnabled()) {
             // NFC is disabled, show turn on NFC dialog
             showTurnOnNfcDialog();
@@ -499,7 +541,6 @@ public class Class_Detail_lecturer extends AppCompatActivity implements CardNfcA
             // NFC is enabled, start NFC reading
             mCardNfcUtils.enableDispatch();
             Log.e(TAG, "nfc activated");
-
         }
         // Handle NFC settings result if needed
         if (mIsScanNow) {
@@ -549,14 +590,14 @@ public class Class_Detail_lecturer extends AppCompatActivity implements CardNfcA
             String mess = "You need turn on NFC module for scanning. Wish turn on it now?";
             String pos = "Turn on";
             String neg = "Dismiss";
-            KAlertDialog dialog =   new KAlertDialog(this, KAlertDialog.WARNING_TYPE,false);
+            KAlertDialog dialog =   new KAlertDialog(this, KAlertDialog.WARNING_TYPE,Paper.book().read("DarkMode",false));
             dialog.setTitleText(title);
             dialog.setContentText(mess);
             dialog.confirmButtonColor(R.color.blue);
             dialog.cancelButtonColor(R.color.blue);
             dialog.setConfirmClickListener(pos, kAlertDialog -> {
                 // Send the user to the settings page and hope they turn it on
-                    startActivity(new Intent(android.provider.Settings.ACTION_WIRELESS_SETTINGS));
+                    startActivity(new Intent(Settings.ACTION_NFC_SETTINGS));
                     isNfcDialogShown=true;
                     dialog.dismiss();
 
@@ -591,7 +632,7 @@ public class Class_Detail_lecturer extends AppCompatActivity implements CardNfcA
        // String cardType = mCardNfcAsyncTask.getCardType();
 
         String mess = "card number : "+ card;
-        Toast.makeText(this,mess,Toast.LENGTH_SHORT).show();
+        // Toast.makeText(this,mess,Toast.LENGTH_SHORT).show();
         Log.w("card",mess);
         getEmailFromCardNumber(card);
 
@@ -715,6 +756,7 @@ public class Class_Detail_lecturer extends AppCompatActivity implements CardNfcA
                             startActivity(intent);
                             overridePendingTransition(0,0);
 
+
                         } else {
                             Log.w(MotionEffect.TAG, "Error getting documents: ", task.getException());
                         }
@@ -722,5 +764,6 @@ public class Class_Detail_lecturer extends AppCompatActivity implements CardNfcA
                 });
 
 
-    }
+    }//end onItemClick
+
 }//end class

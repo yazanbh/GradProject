@@ -7,6 +7,7 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.view.Window;
 import android.widget.ImageView;
 import android.widget.RadioButton;
@@ -15,6 +16,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.applandeo.materialcalendarview.CalendarView;
@@ -37,10 +39,12 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
+import io.paperdb.Paper;
+
 public class StudentDetail extends AppCompatActivity {
     FirebaseFirestore db;
     ImageView img_btn;
-    TextView cname,PresentCount,AbsentCount,percent;
+    TextView cname,PresentCount,AbsentCount,percent , alert;
     SwipeRefreshLayout swipeLayout;
     double present,absent , exabsent;
     ChipNavigationBar bottomNavigationView;
@@ -54,6 +58,16 @@ public class StudentDetail extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.student_class_detail);
+
+        boolean isDarkMode = Paper.book().read("DarkMode",false);
+        if(isDarkMode){
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+        }
+        else{
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+        }
+        alert= findViewById(R.id.stdShowAlert);
+        alert.setVisibility(View.GONE);
 
         pageData();
         //back button of top|left in page
@@ -288,12 +302,14 @@ public class StudentDetail extends AppCompatActivity {
                     .addOnSuccessListener(aVoid -> {
                         // Handle success
                         Log.d("Firestore", "DocumentSnapshot successfully updated!");
+                        Toast.makeText(StudentDetail.this,"Success",Toast.LENGTH_SHORT).show();
                         dialog.dismiss();
                         // Refresh the page data after updating
                         pageData();
                     })
                     .addOnFailureListener(e -> {
                         // Handle failures
+                        Toast.makeText(StudentDetail.this,"Failure",Toast.LENGTH_SHORT).show();
                         Log.w("Firestore", "Error updating document", e);
                         // You might want to inform the user about the failure
                     });

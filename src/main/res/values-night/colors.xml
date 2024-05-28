@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#FFFFFF</color>
+    <color name="colorPrimaryDark">#000000</color>
+    <color name="colorAccent">#FF009EFD</color>
+
+    <color name="MainBack">#FFFFFF</color>
+
+    <color name="theme_light">#FF009EFD</color>
+
+    <color name="text_color_secondary">#C2C2C2</color>
+    <color name="white">#FFFFFF</color>
+
+    <color name="text_color_dark">#E1000000</color>
+
+    <color name="green_new">#11D853</color>
+    <color name="red_new">#FB0000</color>
+    <color name="gray">#B1B1B1</color>
+    <color name="grey">#323131</color>
+    <color name="yellow">#F8BA0F</color>
+    <color name="goodgrey">#535353</color>
+    <color name="blue">#3569e1</color>
+    <color name="lightgrey">#EEEEEE</color>
+    <color name="goodgray">#A8A8A8</color>
+
+    <!-- NFC Reader Colors -->
+    <color name="link_blue">#3569e1</color>
+    <color name="darkBlue">#0393ed</color>
+    <color name="main_darkBlue">#69c9cf</color>
+    <color name="divider_grey">#ededed</color>
+    <color name="main_darkgrey">#5a5a5b</color>
+    <color name="black">#000</color>
+
+
+
+    <color name="home">#2196F3</color>
+    <color name="activity">#673AB7</color>
+    <color name="favorites">#E91E63</color>
+    <color name="settings">#4CAF50</color>
+
+
+    <color name="mint">#00BFBF</color>
+    <color name="plum">#bb315b</color>
+    <color name="blue_gray">#6C7F8A</color>
+    <color name="accent_default">@color/mint</color>
+    <color name="accent_default_light">@color/plum</color>
+    <color name="dark_gray">#828c90</color>
+    <color name="charcoal">#2a353a</color>
+
+
+
+    <color name="backgroundColor">#222</color>
+    <color name="textColor">#CDCDCD</color>
+    <color name="CalendartextColor">#575454</color>
+
+    <color name="textColorPofile">#293859</color>
+<color name="passwordToggleTint">#CCC</color>
+
+</resources>

@@ -14,6 +14,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 
 import com.developer.kalert.KAlertDialog;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -38,6 +39,16 @@ public class Login_std extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.signin_student);
+
+        boolean isDarkMode = Paper.book().read("DarkMode",false);
+        if(isDarkMode){
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+        }
+        else{
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+        }
+
+
         emailEditText = findViewById(R.id.std_email);
         passwordEditText = findViewById(R.id.std_password);
         // Initialize Firebase Auth
@@ -177,8 +188,8 @@ public class Login_std extends AppCompatActivity {
             emailEditText.requestFocus();
             t=false;
         }
-        if(pass.isEmpty() || pass.length()<7){
-            passwordEditText.setError("password must be 7 character at least");
+        if(pass.isEmpty() || pass.length()<8){
+            passwordEditText.setError("password must be 8 character at least");
             passwordEditText.requestFocus();
             t=false;
         }
